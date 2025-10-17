@@ -1,4 +1,4 @@
-use base64::{Engine, prelude::BASE64_URL_SAFE_NO_PAD};
+use base64ct::{Base64UrlUnpadded, Encoding as _};
 use serde;
 
 /// A public key
@@ -16,12 +16,11 @@ impl PublicKey {
 
 impl std::fmt::Display for PublicKey {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
-
         match self {
-            PublicKey::Ed25519(p) => {
-                f.write_fmt(format_args!("ed25519:{}", URL_SAFE_NO_PAD.encode(p)))
-            }
+            PublicKey::Ed25519(p) => f.write_fmt(format_args!(
+                "ed25519:{}",
+                Base64UrlUnpadded::encode_string(p)
+            )),
         }
     }
 }
@@ -59,9 +58,9 @@ impl<'de> serde::Deserialize<'de> for PublicKey {
                     "ed25519" => {
                         if rest.len() == PublicKey::ED25519_ENCODED_LEN {
                             let mut key = [0; 32];
-                            let wrote = BASE64_URL_SAFE_NO_PAD
-                                .decode_slice(rest, &mut key)
-                                .map_err(|_| E::custom("failed to decode base64url key"))?;
+                            let wrote = base64ct::Base64UrlUnpadded::decode(rest, &mut key)
+                                .map_err(|_| E::custom("failed to decode base64url key"))?
+                                .len();
                             if 32 == wrote {
                                 Ok(PublicKey::Ed25519(key))
                             } else {

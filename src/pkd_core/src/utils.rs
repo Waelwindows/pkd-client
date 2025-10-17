@@ -107,12 +107,12 @@ impl<T> Timestamped<T> {
 }
 
 pub mod serde_base64 {
-    use base64::{Engine, prelude::BASE64_URL_SAFE_NO_PAD};
+    use base64ct::{Base64UrlUnpadded, Encoding};
     use serde::{Deserializer, Serializer};
 
     pub fn serialize<S: Serializer>(bytes: &[u8], serializer: S) -> Result<S::Ok, S::Error> {
         // TODO: confirm whether there's padding or no
-        let b64 = BASE64_URL_SAFE_NO_PAD.encode(bytes);
+        let b64 = Base64UrlUnpadded::encode_string(bytes);
         serializer.serialize_str(&b64)
     }
 
@@ -130,9 +130,7 @@ pub mod serde_base64 {
             }
 
             fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<Self::Value, E> {
-                BASE64_URL_SAFE_NO_PAD
-                    .decode(v)
-                    .map_err(|_| E::custom("base64url decoding error"))
+                Base64UrlUnpadded::decode_vec(v).map_err(|_| E::custom("base64url decoding error"))
             }
         }
 

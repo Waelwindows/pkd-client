@@ -1,4 +1,4 @@
-use base64::{Engine as _, prelude::BASE64_URL_SAFE_NO_PAD};
+use base64ct::{Base64UrlUnpadded, Encoding};
 
 /// A PKD Merkle-tree root
 #[derive(Debug, PartialEq, Eq)]
@@ -14,12 +14,11 @@ impl MerkleRoot {
 
 impl std::fmt::Display for MerkleRoot {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        use base64::{Engine as _, engine::general_purpose::URL_SAFE_NO_PAD};
-
         match self {
-            MerkleRoot::V1(p) => {
-                f.write_fmt(format_args!("pkd-mr-v1:{}", URL_SAFE_NO_PAD.encode(p)))
-            }
+            MerkleRoot::V1(p) => f.write_fmt(format_args!(
+                "pkd-mr-v1:{}",
+                Base64UrlUnpadded::encode_string(p)
+            )),
         }
     }
 }
@@ -57,9 +56,9 @@ impl<'de> serde::Deserialize<'de> for MerkleRoot {
                     "pkd-mr-v1" => {
                         if rest.len() == MerkleRoot::V1_ENCODED_LEN {
                             let mut key = [0; 32];
-                            let wrote = BASE64_URL_SAFE_NO_PAD
-                                .decode_slice(rest, &mut key)
-                                .map_err(|_| E::custom("failed to decode base64url"))?;
+                            let wrote = Base64UrlUnpadded::decode(rest, &mut key)
+                                .map_err(|_| E::custom("failed to decode base64url"))?
+                                .len();
                             if MerkleRoot::V1_LEN == wrote {
                                 Ok(MerkleRoot::V1(key))
                             } else {
