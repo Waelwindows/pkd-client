@@ -9,7 +9,7 @@ use crate::{
 pub struct AddAuxData {
     /// The ciphertext
     pub message: Timestamped<AuxData<AddAuxDataInner<CipherText>>>,
-    /// The symmetric keys used to encrypt [`message`]
+    /// The symmetric keys used to encrypt `message`
     pub symmetric_keys: AddAuxDataInner<SymmetricKey>,
 }
 
@@ -19,7 +19,7 @@ pub struct AddAuxData {
 pub struct RevokeAuxData {
     /// The ciphertext
     pub message: Timestamped<AuxData<RevokeAuxDataInner<CipherText>>>,
-    /// The symmetric keys used to encrypt [`message`]
+    /// The symmetric keys used to encrypt `message`
     pub symmetric_keys: RevokeAuxDataInner<SymmetricKey>,
 }
 

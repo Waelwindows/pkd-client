@@ -9,7 +9,7 @@ use crate::{
 pub struct FireproofOrUndo {
     /// The ciphertext
     pub message: Timestamped<FireproofInner<CipherText>>,
-    /// The symmetric keys used to encrypt [`message`]
+    /// The symmetric keys used to encrypt `message`
     pub symmetric_keys: FireproofInner<SymmetricKey>,
 }
 

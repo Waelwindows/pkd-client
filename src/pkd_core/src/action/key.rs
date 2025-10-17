@@ -10,7 +10,7 @@ use crate::{
 pub struct AddOrRevokeKey {
     /// The inner content
     pub message: Timestamped<AddOrRevokeKeyInner<CipherText>>,
-    /// The symmetric keys used to encrypt [`message`]
+    /// The symmetric keys used to encrypt `message`
     pub symmetric_keys: AddOrRevokeKeyInner<SymmetricKey>,
 }
 

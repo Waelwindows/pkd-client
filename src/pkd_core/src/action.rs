@@ -103,7 +103,7 @@ pub enum Action {
     MoveIdentity {
         /// The ciphertext
         message: Timestamped<MoveIdentity<CipherText>>,
-        /// The symmetric keys used to encrypt [`message`]
+        /// The symmetric keys used to encrypt `message`
         symmetric_keys: MoveIdentity<SymmetricKey>,
     },
     /// The [`BurnDown`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#burndown) PDK message
@@ -113,7 +113,7 @@ pub enum Action {
         /// A one-time password
         #[serde(default, skip_serializing_if = "Option::is_none")]
         otp: Option<String>,
-        /// The symmetric keys used to encrypt [`message`]
+        /// The symmetric keys used to encrypt `message`
         symmetric_keys: BurnDown<SymmetricKey>,
     },
     /// The [`Fireproof`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#fireproof) PDK message
