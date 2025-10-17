@@ -44,8 +44,42 @@ impl Wrap for CipherText {
 }
 
 /// Indicate the inner type is a symmetric key.
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-pub struct SymmetricKey(#[serde(with = "crate::utils::serde_base64")] pub Vec<u8>);
+#[derive(Debug, serde::Serialize, serde::Deserialize)]
+pub struct SymmetricKey(#[serde(with = "crate::utils::serde_base64_secrecy")] secrecy::SecretBox<Vec<u8>>);
+
+impl SymmetricKey {
+    /// Initialize a [`SymmetricKey`] in-place using function `f`
+    ///
+    /// # Example
+    /// ```
+    /// // SAFETY: Don't store secrets' plaintext in your executable like this!
+    /// let secret = SymmetricKey::init(|v| v.extend_from_slice(b"foo"));
+    /// ```
+    pub fn init<F: FnOnce(&mut Vec<u8>)>(f: F) -> Self {
+        Self(secrecy::SecretBox::init_with_mut(f))
+    }
+}
+
+// Constant time compare
+impl PartialEq for SymmetricKey {
+    fn eq(&self, other: &Self) -> bool {
+        use secrecy::ExposeSecret;
+
+        // SAFETY: this is constant time as Vecs store their length
+        let lhs = self.0.expose_secret();
+        let rhs = other.0.expose_secret();
+        if lhs.len() != rhs.len() {
+            return false;
+        }
+        let mut diff = 0;
+        // SAFETY: at this point we know lhs.len() == rhs.len()
+        for (l, r) in lhs.iter().zip(rhs.iter()) {
+            diff |=  l ^ r;
+        }
+        diff == 0
+    }
+}
+impl Eq for SymmetricKey { }
 
 impl Sealed for SymmetricKey {}
 impl Wrap for SymmetricKey {

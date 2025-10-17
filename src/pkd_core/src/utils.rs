@@ -138,6 +138,47 @@ pub mod serde_base64 {
     }
 }
 
+// SAFETY: We assume in good faith that [`serde`] and [`serde_json`] don't unneccessairly clone secret
+pub mod serde_base64_secrecy {
+    use base64ct::{Base64UrlUnpadded, Encoding};
+    use serde::{Deserializer, Serializer};
+    use secrecy::{ExposeSecret, SecretBox};
+
+    pub fn serialize<S: Serializer>(bytes: &SecretBox<Vec<u8>>, serializer: S) -> Result<S::Ok, S::Error> {
+        // TODO: confirm whether there's padding or no
+        let b64 = Base64UrlUnpadded::encode_string(bytes.expose_secret());
+        serializer.serialize_str(&b64)
+    }
+
+    pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<SecretBox<Vec<u8>>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        struct Base64Visitor;
+
+        impl<'de> serde::de::Visitor<'de> for Base64Visitor {
+            type Value = SecretBox<Vec<u8>>;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("base64url encoded bytes")
+            }
+
+            fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<Self::Value, E> {
+                let mut ret = Ok(0);
+                let secret = SecretBox::<Vec<u8>>::init_with_mut(|b| {
+                    // SAFETY: We know that base64url encoding is always bigger than data
+                    // Thus, we are sure we won't reallocate after this
+                    b.reserve_exact(v.len());
+                    ret = Base64UrlUnpadded::decode(v, b).map(|x| x.len()).map_err(|_| E::custom("failed to decode base64url bytes"));
+                });
+                ret.map(|_| secret)
+            }
+        }
+
+        deserializer.deserialize_str(Base64Visitor)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use crate::utils::Encrypted;
