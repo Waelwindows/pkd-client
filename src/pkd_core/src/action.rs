@@ -2,8 +2,18 @@
 //!
 //!
 
-use crate::{utils::{sealed::Sealed, Encrypted, Timestamped}, MerkleRoot, PublicKey};
+use crate::{
+    MerkleRoot, PublicKey,
+    utils::{Encrypted, Timestamped, sealed::Sealed},
+};
 
+mod aux;
+mod fireproof;
+mod key;
+
+pub use aux::*;
+pub use fireproof::*;
+pub use key::*;
 
 /// A hack to get around Rust not having type functions
 ///
@@ -33,7 +43,7 @@ impl Wrap for CipherText {
     type Wrapper<T> = Encrypted<T>;
 }
 
-/// Indicate the inner type is a symmetric key
+/// Indicate the inner type is a symmetric key.
 #[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct SymmetricKey(#[serde(with = "crate::utils::serde_base64")] pub Vec<u8>);
 
@@ -42,25 +52,14 @@ impl Wrap for SymmetricKey {
     type Wrapper<T> = Self;
 }
 
-
 /// PKD protocol messages
 #[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 #[serde(tag = "action")]
 pub enum Action {
     /// The [`AddKey`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addkey) PDK message
-    AddKey {
-        /// The inner content
-        message: Timestamped<AddOrRevokeKey<CipherText>>,
-        /// The symmetric keys used to encrypt [`message`]
-        symmetric_keys: AddOrRevokeKey<SymmetricKey>,
-    },
+    AddKey(AddOrRevokeKey),
     /// The [`RevokeKey`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#revokekey) PDK message
-    RevokeKey {
-        /// The inner content
-        message: Timestamped<AddOrRevokeKey<CipherText>>,
-        /// The symmetric keys used to encrypt [`message`]
-        symmetric_keys: AddOrRevokeKey<SymmetricKey>,
-    },
+    RevokeKey(AddOrRevokeKey),
     /// The [`RevokeKeyThirdParty`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#revokekeythirdparty) PDK message
     RevokeKeyThirdParty {
         /// a compact token that a user can issue at any time to revoke an existing public key
@@ -84,33 +83,13 @@ pub enum Action {
         symmetric_keys: BurnDown<SymmetricKey>,
     },
     /// The [`Fireproof`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#fireproof) PDK message
-    Fireproof {
-        /// The ciphertext
-        message: Timestamped<Fireproof<CipherText>>,
-        /// The symmetric keys used to encrypt [`message`]
-        symmetric_keys: Fireproof<SymmetricKey>,
-    },
+    Fireproof(FireproofOrUndo),
     /// The [`UndoFireproof`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#undofireproof) PDK message
-    UndoFireproof {
-        /// The ciphertext
-        message: Timestamped<Fireproof<CipherText>>,
-        /// The symmetric keys used to encrypt [`message`]
-        symmetric_keys: Fireproof<SymmetricKey>,
-    },
+    UndoFireproof(FireproofOrUndo),
     /// The [`AddAuxData`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addauxdata) PDK message
-    AddAuxData {
-        /// The ciphertext
-        message: Timestamped<AuxData<AddAuxDataInner<CipherText>>>,
-        /// The symmetric keys used to encrypt [`message`]
-        symmetric_keys: AddAuxDataInner<SymmetricKey>,
-    },
+    AddAuxData(AddAuxData),
     /// The [`RevokeAuxData`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#revokeauxdata) PDK message
-    RevokeAuxData {
-        /// The ciphertext
-        message: Timestamped<AuxData<RevokeAuxDataInner<CipherText>>>,
-        /// The symmetric keys used to encrypt [`message`]
-        symmetric_keys: RevokeAuxDataInner<SymmetricKey>,
-    },
+    RevokeAuxData(RevokeAuxData),
     /// The [`Checkpoint`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#checkpoint) PDK message
     Checkpoint {
         /// The inner content
@@ -120,16 +99,6 @@ pub enum Action {
 
 /// A concrete id for a fediverse Actor
 pub type ActorId = String;
-
-/// [`AddKey`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addkey) PKD protocol message
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct AddOrRevokeKey<M: Wrap> {
-    /// The canonical Actor ID for a given ActivityPub user.
-    pub actor: M::Wrapper<ActorId>,
-    /// The public key to add or revoke.
-    pub public_key: M::Wrapper<PublicKey>,
-}
 
 /// [`AddKey`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addkey) PKD protocol message
 #[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -149,52 +118,6 @@ pub struct BurnDown<M: Wrap> {
     pub actor: M::Wrapper<ActorId>,
     /// The instance operator that is issuing the [`BurnDown`] on behalf of the user.
     pub operator: M::Wrapper<ActorId>,
-}
-
-/// [`AddKey`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addkey) PKD protocol message
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct Fireproof<M: Wrap> {
-    /// The canonical Actor ID for a given ActivityPub user.
-    pub actor: M::Wrapper<ActorId>,
-}
-
-/// [`AuxData`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addauxdata) PKD protocol message attributes
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "kebab-case")]
-pub struct AuxData<T> {
-    aux_id: Option<String>,
-    aux_type: String,
-    #[serde(flatten)]
-    inner: T,
-}
-
-/// [`AddAuxData`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addauxdata) PKD protocol message attributes
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "kebab-case")]
-#[serde(bound(
-    serialize = "M::Wrapper<Vec<u8>>: serde::Serialize, M::Wrapper<ActorId>: serde::Serialize",
-    deserialize = "M::Wrapper<Vec<u8>>: serde::Deserialize<'de>, M::Wrapper<ActorId>: serde::Deserialize<'de>"
-))]
-pub struct AddAuxDataInner<M: Wrap> {
-    /// The canonical Actor ID for a given ActivityPub user.
-    pub actor: M::Wrapper<ActorId>,
-    /// The auxiliary data.
-    pub aux_data: M::Wrapper<Vec<u8>>,
-}
-
-/// [`RevokeAuxData`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#revokeauxdata) PKD protocol message attributes
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(rename_all = "kebab-case")]
-#[serde(bound(
-    serialize = "M::Wrapper<Vec<u8>>: serde::Serialize, M::Wrapper<ActorId>: serde::Serialize",
-    deserialize = "M::Wrapper<Vec<u8>>: serde::Deserialize<'de>, M::Wrapper<ActorId>: serde::Deserialize<'de>"
-))]
-pub struct RevokeAuxDataInner<M: Wrap> {
-    /// The canonical Actor ID for a given ActivityPub user.
-    pub actor: M::Wrapper<ActorId>,
-    /// The auxiliary data.
-    pub aux_data: Option<M::Wrapper<Vec<u8>>>,
 }
 
 /// [`AddKey`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addkey) PKD protocol message
