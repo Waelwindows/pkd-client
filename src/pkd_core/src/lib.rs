@@ -7,5 +7,7 @@
 #![deny(unsafe_code)]
 
 mod key;
+mod merkle;
 
 pub use key::*;
+pub use merkle::*;
