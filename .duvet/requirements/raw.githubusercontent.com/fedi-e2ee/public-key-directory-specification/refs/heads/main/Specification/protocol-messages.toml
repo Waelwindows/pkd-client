@@ -1,0 +1,85 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#protocol-messages"
+
+# Protocol Messages
+#
+# This section outlines the different message types that will be passed from the Fediverse Server to the Public Key
+# Directory server.
+# 
+# Each protocol message will be a UTF-8 encoded JSON string. Dictionary keys **MUST** be unique within the same level.
+# Dictionary keys **SHOULD** be sorted. Participants **MAY** use whitespace, but it is not required or recommended.
+# 
+# Most protocol messages will consist of the same structure. Each Protocol Message is formally defined in subsequent
+# subsections of this document:
+# 
+# ```json5
+# {
+#   /* The version number used in !pkd-context may change in the future: */
+#   "!pkd-context": "https://github.com/fedi-e2ee/public-key-directory/v1",
+#   /* The action, such as AddKey or RevokeKey, goes here: */
+#   "action": "",
+#   // key-id sometimes goes here
+#   "message": {
+#     /* 
+#     The actual message contents required for the specific action goes here.
+#     Its contents may vary from action to action.
+#     */
+#   },
+#   /* A recent Merkle root (if applicable) for a previous message: */
+#   "recent-merkle-root": "", 
+#   /* A signature calculated over "!pkd-context", "action", "recent-merkle-root", and "message": */
+#   "signature": "",
+#   "symmetric-keys": {
+#     /* These are used to decrypt attributes in the "message" object. They are not signed.
+#      * This feature also only exists for compliance purposes, not to accomplish security goals.
+#      * These are disclosed to the server, but not echoed to clients. Instead, plaintext will be served back. */
+#   }
+# }
+# ```
+# 
+# Some protocol messages **SHOULD** also include a top level `"key-id"` attribute, which will help implementations select
+# one of many public keys to validate the signature. If no `key-id` is provided, each valid public key **MAY** be tried.
+# 
+# The following subsections each describe a different Protocol Message type.
+# 
+# * [`AddKey`](#addkey): Add a new public key for a given Actor
+# * [`RevokeKey`](#revokekey): Revoke a public key
+# * [`RevokeKeyThirdParty`](#revokekeythirdparty): A mechanism for independent third parties to revoke compromised keys
+# * [`MoveIdentity`](#moveidentity): Move all existing public keys and auxiliary data to a new Actor ID.
+# * [`BurnDown`](#burndown): A mechanism for account recovery.
+# * [`Fireproof`](#fireproof): Opt out of `BurnDown`.
+# * [`UndoFireproof`](#undofireproof): Opt back into `BurnDown`.
+# * [`AddAuxData`](#addauxdata): Add auxiliary data (e.g. public keys for other protocols).
+# * [`RevokeAuxData`](#revokeauxdata): Revoke auxiliary data.
+# * [`Checkpoint`](#checkpoint): Allows one PKD to commit their Merkle root to a peer PKD instance.
+
+[[spec]]
+level = "MUST"
+quote = '''
+Dictionary keys **MUST** be unique within the same level.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Dictionary keys **SHOULD** be sorted.
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+Participants **MAY** use whitespace, but it is not required or recommended.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Some protocol messages **SHOULD** also include a top level `"key-id"` attribute, which will help implementations select
+one of many public keys to validate the signature.
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+If no `key-id` is provided, each valid public key **MAY** be tried.
+'''
+

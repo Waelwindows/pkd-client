@@ -1,0 +1,29 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#malicious-instance-administrator-attempts-to-censor-fireproof-messages-to-retain-control"
+
+# Malicious instance administrator attempts to censor Fireproof messages to retain control.
+#
+# **Status**: Mitigated.
+# 
+# Richard wants to ensure Dave's account is never [Fireproof](#fireproof), because he wants the ability to issue a 
+# BurnDown on Dave's behalf at a moment's notice. To that end, his server software is modified to silently drop any 
+# Protocol Messages sent from any user if the action is set to Fireproof.
+# 
+# Dave can configure his client software to [always use Protocol Message Encryption](#encryption-of-protocol-messages).
+# This ensures that Richard cannot inspect and selectively censor Dave's Protocol Messages. He must choose an 
+# all-or-nothing approach to which Protocol Messages are passed onto the Public Key Directory.
+# 
+# For this reason, users **SHOULD** encrypt all of their Protocol Messages, not just `Fireproof` messages. 
+# It is further **RECOMMENDED** for client software to make this encryption the default behavior.
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+For this reason, users **SHOULD** encrypt all of their Protocol Messages, not just `Fireproof` messages.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+It is further **RECOMMENDED** for client software to make this encryption the default behavior.
+'''
+

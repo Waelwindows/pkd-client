@@ -1,0 +1,36 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#revocation-tokens"
+
+# Revocation Tokens
+#
+# A revocation token is a compact token that a user can issue at any time to revoke an existing public key. If they issue
+# a revocation against their only public key, the Public Key Directory will treat it as a `BurnDown`.
+# 
+# Revocation tokens are [base64url](https://datatracker.ietf.org/doc/html/rfc4648#section-5)-encoded strings in the
+# following format:
+# 
+# ```
+# tmp := version || REVOCATION_CONSTANT || public_key 
+# revocation_token := base64url_encode(tmp || Sign(secret_key, tmp))
+# ```
+# 
+# Where:
+#  * `version` is the version of the protocol being used (currently, `FediPKD1`).
+#  * `REVOCATION_CONSTANT` is a domain-separated constant for revoking an existing key. Its current value is
+#    the `0xFE` byte repeated 32 times followed by `revoke-public-key`.
+#  * `Sign(sk, m)` performs the digital signature algorithm corresponding to the current protocol version.
+#    (Currently, Ed25519.)
+# 
+# These values **MAY** be encrypted and stored in case of emergency. There is no temporal or random component to the 
+# message format, so they can be issued at any time.
+# 
+# If you stumble upon another user's secret key, generating a revocation token should be straightforward.
+# 
+# Security researchers are encouraged to push revocation tokens whenever another person's secret key is compromised, and
+# said security researcher has deemed it necessary to do so to minimize harm.
+
+[[spec]]
+level = "MAY"
+quote = '''
+These values **MAY** be encrypted and stored in case of emergency.
+'''
+

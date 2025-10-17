@@ -1,0 +1,54 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#rate-limiting-bad-requests"
+
+# Rate-Limiting Bad Requests
+#
+# The first step should be checking the source of the request against a rate-limiting protocol with exponential back-off.
+# 
+# Rejected or invalid Protocol Messages will increase the counter for that client or Fediverse server and for the IP 
+# address that sent the request. Each value of the counter doubles the amount of time that must pass between subsequent
+# requests, beginning with a configurable parameter (default = 100 milliseconds) for the first failure.
+# 
+# Public Key Directories **MAY** specify a maximum time between requests from misbehaving instances. It is not required to
+# have a maximum penalty time.
+# 
+# If the request has an entry in the Bad Request table based on server identity or IP address, the timestamp of the last
+# request + the current penalty is compared to the current time. If insufficient time has elapsed, the request is dropped,
+# and the server responds with an HTTP 429 error.
+# 
+# After a period of time equal to twice the penalty has passed, the counter will be decremented by 1, until it reaches 0.
+# At this point, the item is removed from the Bad Request table.
+# 
+# Attempting to send requests that trigger rate limit rejection **MAY** incur additional penalties, depending on server
+# configuration, but it isn't required. Public Key Directories **MAY** also permanently block Fediverse Servers that 
+# routinely misbehave at their operator's discretion. 
+# 
+# [TOTP Messages](#totp) **MUST** employ aggressive rate-limiting for incorrect guesses, but for which the HTTP Signature
+# was valid (i.e., the request originated from the instance).
+
+[[spec]]
+level = "MAY"
+quote = '''
+Public Key Directories **MAY** specify a maximum time between requests from misbehaving instances.
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+Attempting to send requests that trigger rate limit rejection **MAY** incur additional penalties, depending on server
+configuration, but it isn't required.
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+Public Key Directories **MAY** also permanently block Fediverse Servers that
+routinely misbehave at their operator's discretion.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+[TOTP Messages](#totp) **MUST** employ aggressive rate-limiting for incorrect guesses, but for which the HTTP Signature
+was valid (i.e., the request originated from the instance).
+'''
+

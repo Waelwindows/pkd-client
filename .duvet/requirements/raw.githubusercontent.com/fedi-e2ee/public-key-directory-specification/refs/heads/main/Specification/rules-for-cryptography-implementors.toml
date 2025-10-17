@@ -1,0 +1,45 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#rules-for-cryptography-implementors"
+
+# Rules For Cryptography Implementors
+#
+# All implementations of cryptographic primitives (i.e., AES) must be resistant to side-channel attacks and use the
+# strictest possible validation criteria.
+# 
+# For randomness and entropy, the Operating System's Cryptographic Random Number Generator must be used. On Linux systems,
+# the `getrandom(2)` syscall or `/dev/urandom` device is acceptable. Userspace random number generators (e.g., OpenSSL's
+# `RAND_bytes()`) **MUST NOT** be used.
+# 
+# For AES, this means only supporting hardware acceleration or constant-time, bitsliced software implementations.
+# 
+# For Ed25519, this means rejecting low-order public keys or non-canonical signatures.
+# 
+# For Argon2id, this means that at least one of the rounds must use data-independent memory addresses. It's acceptable if
+# one or more rounds uses data-dependent memory addresses to improve GPU attack resistance.
+# 
+# When base64url-encoding a non-secret value, there is no expectation of constant-time behavior. However, if the data
+# being encoded or decoded is a secret (e.g., plaintext or cryptography key), the codec **MUST** be implemented in
+# constant-time.
+# 
+# When comparing cryptographic outputs, a constant-time comparison **MUST** always be used.
+
+[[spec]]
+level = "MUST"
+quote = '''
+Userspace random number generators (e.g., OpenSSL's
+`RAND_bytes()`) **MUST NOT** be used.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+However, if the data
+being encoded or decoded is a secret (e.g., plaintext or cryptography key), the codec **MUST** be implemented in
+constant-time.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+When comparing cryptographic outputs, a constant-time comparison **MUST** always be used.
+'''
+

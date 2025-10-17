@@ -1,0 +1,83 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#recent-merkle-root-included-in-plaintext-commitments"
+
+# Recent Merkle Root Included in Plaintext Commitments
+#
+# We additionally include the Merkle root of a recent accepted Protocol Message when calculating this commitment. Which 
+# root is selected **MUST** be stored alongside the ciphertext. By "recent", we strictly mean the following:
+# 
+# 1. Clients are **RECOMMENDED** to use the Merkle root of the most recent Protocol Message.
+# 2. If there are N accepted messages in the ledger, the selected Merkle root **SHOULD** be no more than log_2(N)^2
+#    messages old (rounded up to the nearest whole number). Public Key Directories **MUST NOT** reject messages newer than
+#    this threshold on basis of staleness.
+# 3. To tolerate large transaction volumes in a short window of time, the chosen Merkle root **MUST** be at least in the 
+#    most recent N/2 messages (for N currently accepted Protocol Messages). Public Key Directories **MAY** reject these
+#    messages due to staleness, especially if the Directory isn't experiencing significant throughput, or if an Actor
+#    submits multiple Protocol Messages tied to a Merkle root too old to satisfy rule 2.
+# 
+# For example: When attempting to insert the 1,000,001th record, this means there are currently 1,000,000 accepted
+# Protocol Messages stored in the Public Key Database. The 1,000,000th record is preferred (by rule 1 above).
+# 
+# However, any message after 999,602 would be considered acceptable. Arithmetically, log_2(1,000,000) squared is 397.26.
+# We round up to a tolerance window of 398. 1,000,000 minus 398 is 999,602. So any record's Merkle root corresponding to
+# a message index in that range is acceptable to use by rule 2.
+# 
+# However, if there is an enormous spike in traffic, Public Key Directories **MAY** tolerate as far back as 500,000,
+# provided no two Protocol Messages from the same actor reuse the same "recent" Merkle root.
+# 
+# For the first message in a PKD, the "recent" Merkle root **MUST** be set to a sequence of 32 `0x00` bytes.
+
+[[spec]]
+level = "MUST"
+quote = '''
+Which
+root is selected **MUST** be stored alongside the ciphertext.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Clients are **RECOMMENDED** to use the Merkle root of the most recent Protocol Message.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+If there are N accepted messages in the ledger, the selected Merkle root **SHOULD** be no more than log_2(N)^2
+messages old (rounded up to the nearest whole number).
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Public Key Directories **MUST NOT** reject messages newer than
+this threshold on basis of staleness.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+To tolerate large transaction volumes in a short window of time, the chosen Merkle root **MUST** be at least in the
+most recent N/2 messages (for N currently accepted Protocol Messages).
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+Public Key Directories **MAY** reject these
+messages due to staleness, especially if the Directory isn't experiencing significant throughput, or if an Actor
+submits multiple Protocol Messages tied to a Merkle root too old to satisfy rule 2.
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+However, if there is an enormous spike in traffic, Public Key Directories **MAY** tolerate as far back as 500,000,
+provided no two Protocol Messages from the same actor reuse the same "recent" Merkle root.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+For the first message in a PKD, the "recent" Merkle root **MUST** be set to a sequence of 32 `0x00` bytes.
+'''
+

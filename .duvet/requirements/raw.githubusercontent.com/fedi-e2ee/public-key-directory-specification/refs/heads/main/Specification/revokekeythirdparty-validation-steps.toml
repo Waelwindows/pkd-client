@@ -1,0 +1,19 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#revokekeythirdparty-validation-steps"
+
+# RevokeKeyThirdParty Validation Steps
+#
+# These tokens can be submitted directly to the Public Key Directory server at any time, with or without the involvement
+# of any Fediverse instances.
+# 
+# 1. Decode the revocation token from base64url.
+# 2. Split the revocation token into `version`, `REVOCATION_CONSTANT`, `public_key`, and `signature`
+# 3. Validate signature for  `version || REVOCATION_CONSTANT || public_key`, using `public_key`.
+# 4. If the signature is valid in step 3, revoke this public key for all Actors that share it.
+#    (In practice, this **SHOULD** only be one, but if that's ever not the case, we revoke them all here.)
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+(In practice, this **SHOULD** only be one, but if that's ever not the case, we revoke them all here.)
+'''
+

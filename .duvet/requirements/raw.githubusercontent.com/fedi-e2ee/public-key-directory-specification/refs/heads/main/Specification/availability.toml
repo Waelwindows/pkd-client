@@ -1,0 +1,59 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#availability"
+
+# Availability
+#
+# Client software **SHOULD** route Protocol Messages to more than one Public Key Directory, in case of catastrophic
+# outages or data corruption, as outlined in [the threat model](#cosmic-ray-causes-a-bit-flip-on-stored-data-or-the-result-of-a-computation).
+# 
+# Each Public Key Directory **SHOULD** use a different symmetric key for attribute encryption. Fediverse Servers **MAY** 
+# accept batches of different Protocol Messages (one for each Public Key Directory), and then fan them out asynchronously.
+# Clients **SHOULD** also use a [recent Merkle root](#recent-merkle-root-included-in-plaintext-commitments) from the 
+# Sigsum instance tied to that particular Public Key Directory.
+# 
+# When requesting the public keys or auxiliary data for a specific ActivityPub actor, clients **SHOULD** query multiple
+# Public Key Directories. The **RECOMMENDED** behavior is to require a specific entry exists in multiple PKDs to meet some
+# client-side-configurable Quorum, and reject public keys that have not yet been broadcast to, and accepted by, sufficient
+# Public Key Directory servers.
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Client software **SHOULD** route Protocol Messages to more than one Public Key Directory, in case of catastrophic
+outages or data corruption, as outlined in [the threat model](#cosmic-ray-causes-a-bit-flip-on-stored-data-or-the-result-of-a-computation).
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Each Public Key Directory **SHOULD** use a different symmetric key for attribute encryption.
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+Fediverse Servers **MAY**
+accept batches of different Protocol Messages (one for each Public Key Directory), and then fan them out asynchronously.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Clients **SHOULD** also use a [recent Merkle root](#recent-merkle-root-included-in-plaintext-commitments) from the
+Sigsum instance tied to that particular Public Key Directory.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+When requesting the public keys or auxiliary data for a specific ActivityPub actor, clients **SHOULD** query multiple
+Public Key Directories.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+The **RECOMMENDED** behavior is to require a specific entry exists in multiple PKDs to meet some
+client-side-configurable Quorum, and reject public keys that have not yet been broadcast to, and accepted by, sufficient
+Public Key Directory servers.
+'''
+

@@ -1,0 +1,41 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#reasoning-for-encryption-of-protocol-messages-from-clients"
+
+# Reasoning for Encryption of Protocol Messages from Clients
+#
+# If clients seek to hide the contents of any Protocol Message they are sending to the Public Key Directory from the 
+# Fediverse Server that hosts their account, this provides a mechanism to prevent an honest but curious admin from 
+# comprehending their actions.
+# 
+# The public key **MUST** be fetched directly from each Public Key Directory. Client software **MUST NOT** trust any
+# public key provided by the Fediverse Server.
+# 
+# [`BurnDown`](#burndown) messages **MUST NOT** be encrypted this way. The reason for this is that the Public Key
+# Directory has no idea who is an administrator and who isn't. Therefore, the instance administration team **MUST** be the
+# only entities capable of issuing a BurnDown.
+
+[[spec]]
+level = "MUST"
+quote = '''
+The public key **MUST** be fetched directly from each Public Key Directory.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Client software **MUST NOT** trust any
+public key provided by the Fediverse Server.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+[`BurnDown`](#burndown) messages **MUST NOT** be encrypted this way.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Therefore, the instance administration team **MUST** be the
+only entities capable of issuing a BurnDown.
+'''
+

@@ -1,0 +1,55 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#message-blocks"
+
+# Message Blocks
+#
+# This project is built atop an append-only transparency log. Each Protocol Message will be processed and appended to the
+# ledger. The Public Key Directory software will maintain a current state of which public keys and auxiliary data are
+# currently valid for a given Actor.
+# 
+# Any other machine **MUST** be able to reproduce the same state as the Public Key Directory by replaying the entire 
+# message history from the first block to the current one. Any deviation from this behavior is considered an attempted
+# attack on the system.
+# 
+# This means that history is immutable, with one exception: [the ability for the protocol to forget users](#message-attribute-shreddability).
+# This is achieved by committing encrypted fields to the Merkle tree, and storing an encryption key on the Public Key
+# Directory server until the encryption key's erasure is legally requested.
+# 
+# Each Protocol Message **MUST** be unique. Public Key Directory servers **MUST** reject any replayed Protocol Message,
+# even if it's otherwise valid.
+# 
+# Implementations **SHOULD** provide a distinct error message for when a unique message has already been accepted and
+# processed by the system in a very recent period of time. This **MUST** be distinct from an error condition. 
+
+[[spec]]
+level = "MUST"
+quote = '''
+Any other machine **MUST** be able to reproduce the same state as the Public Key Directory by replaying the entire
+message history from the first block to the current one.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Each Protocol Message **MUST** be unique.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Public Key Directory servers **MUST** reject any replayed Protocol Message,
+even if it's otherwise valid.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Implementations **SHOULD** provide a distinct error message for when a unique message has already been accepted and
+processed by the system in a very recent period of time.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+This **MUST** be distinct from an error condition.
+'''
+

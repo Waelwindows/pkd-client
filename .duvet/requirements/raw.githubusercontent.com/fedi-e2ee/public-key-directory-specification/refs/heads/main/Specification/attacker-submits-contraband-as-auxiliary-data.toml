@@ -1,0 +1,21 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#attacker-submits-contraband-as-auxiliary-data"
+
+# Attacker submits contraband as auxiliary data.
+#
+# **Status**: Addressable.
+# 
+# Consider a Public Key Directory which enables arbitrary, unformatted data to be published to the PKD by users. One day,
+# Troy submits [CSAM](https://www.inhope.org/EN/articles/what-is-csam) to the ledger, then notifies law enforcement of
+# this material being published on the Public Key Directory instance.
+# 
+# To prevent this risk, extensions **SHOULD** be strict about the data they accept.
+# 
+# Failing that, instance operators can use the [message content shredability](#message-attribute-shreddability) mechanism
+# to wipe unwanted illegal material from their records by wiping the decryption key for that record.
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+To prevent this risk, extensions **SHOULD** be strict about the data they accept.
+'''
+

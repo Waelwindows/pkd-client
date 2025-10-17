@@ -1,0 +1,32 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#attacker-sends-spoofed-messages-from-a-compromised-fediverse-server"
+
+# Attacker sends spoofed messages from a compromised Fediverse server.
+#
+# **Status**: Addressable (but Prevented by Design if Fireproof).
+# 
+# This is a variant of [the previous threat](#attacker-sends-spoofed-messages-on-behalf-of-another-server), but Mallory
+# has managed to compromise the server in some way; either through a direct software (or hardware) compromise, or a DNS 
+# hijack and issuing a new TLS certificate for her fake Fediverse server.
+# 
+# As the specification is currently written, whether this attack succeeds depends on whether the administrators have 
+# enabled TOTP challenge-response authentication with the Fediverse server. If they have, Mallory cannot succeed without
+# also compromising the administrators' devices or stealing the TOTP secret through some other mechanism.
+# 
+# However, Mallory would be obligated to create immutable evidence of her intrusion that she cannot wipe without 
+# Yvonne's assistance. See also, [abusing _Right to Be Forgotten_ mechanisms to cover-up intrusions](#hostile-nation-state-seeks-to-abuse-right-to-be-forgotten-mechanisms-to-cover-up-an-unlawful-intrusion).
+# 
+# Mallory cannot, however, issue a `BurnDown` or `AddKey` for a [Fireproof](#fireproof) user. In this sense, the risk to
+# the user is mitigated **so long as they use Fireproof**: You cannot `AddKey` a user with at least one trusted public
+# key, and you cannot `BurnDown` a fireproof user.
+# 
+# All other Protocol Messages must be signed by the user's secret key, which the Fediverse server **MUST NOT** possess.
+# 
+# There may be future mechanisms we can use to prevent compromised servers or DNS hijacks from successfully sending 
+# Protocol Messages to the Public Key Directory, but for now we're leaving this risk Open.
+
+[[spec]]
+level = "MUST"
+quote = '''
+All other Protocol Messages must be signed by the user's secret key, which the Fediverse server **MUST NOT** possess.
+'''
+

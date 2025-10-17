@@ -1,0 +1,48 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#post-api-totp-enroll"
+
+# POST api/totp/enroll
+#
+# Purpose: Enroll an TOTP secret for the current Fediverse instance.
+# 
+# The following HTTP request parameters **MUST** be included:
+# 
+# | Request Parameter | Type   | Remarks                   |
+# |-------------------|--------|---------------------------|
+# | `!pkd-context`    | string | Domain separation         |
+# | `current-time`    | string | [Timestamp](#timestamps)  |
+# | `enrollment`      | object | See next table            |
+# | `signature`       | string | Signature of `enrollment` |
+# 
+# The `!pkd-context` field will be set to the ASCII string `fedi-e2ee:v1/api/totp/enroll`.
+# 
+# The enrollment object will consist of the following fields:
+# 
+# | Request Parameter | Type   | Remarks                                                      |
+# |-------------------|--------|--------------------------------------------------------------|
+# | `actor-id`        | string | The Actor ID that produced the signature.                    |
+# | `key-id`          | string | The specific public key to use for this actor.               |
+# | `otp-current`     | string | One-Time Password (see [TOTP](#totp)), current time window.  |
+# | `otp-previous`    | string | One-Time Password (see [TOTP](#totp)), previous time window. |
+# | `totp-secret`     | string | HPKE-encrypted                                               |
+# 
+# **Example Response**:
+# 
+# ```json5
+# {
+#   "!pkd-context": "fedi-e2ee:v1/api/totp/enroll",
+#   "success": true,
+#   "time": "1730909831"
+# }
+# ```
+# 
+# If the TOTP secret is already enrolled, return an HTTP 409 error.
+# 
+# If the `otp-current` or `otp-previous` is invalid for the HPKE-encrypted secret (or if a decryption error occurs), then
+# the Public Key Directory will return an HTTP 406 error.
+
+[[spec]]
+level = "MUST"
+quote = '''
+The following HTTP request parameters **MUST** be included:
+'''
+

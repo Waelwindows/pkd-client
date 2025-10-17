@@ -1,0 +1,13 @@
+'$schema' = "https://awslabs.github.io/duvet/config/v0.4.0.json"
+
+[[source]]
+pattern = "src/**/*.rs"
+
+[[specification]]
+source = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md"
+[report.html]
+enabled = true
+
+# Enable snapshots to prevent requirement coverage regressions
+[report.snapshot]
+enabled = true

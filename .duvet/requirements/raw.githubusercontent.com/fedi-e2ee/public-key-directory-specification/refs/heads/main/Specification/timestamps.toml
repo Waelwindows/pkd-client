@@ -1,0 +1,18 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#timestamps"
+
+# Timestamps
+#
+# All timestamps must be a string representing a 64-bit UNIX Timestamp, encoded in base-10. For example, `"1724364843"`.
+# 
+# We choose strings here to allow implementations to parse it as a BigInt (or equivalent) in their respective programming
+# language without the JSON parser automatically losing precision for large values (e.g., larger than 2^{53} in 
+# JavaScript).
+# 
+# Implementations **MUST NOT** truncate UNIX timestamps to 32 bits.
+
+[[spec]]
+level = "MUST"
+quote = '''
+Implementations **MUST NOT** truncate UNIX timestamps to 32 bits.
+'''
+

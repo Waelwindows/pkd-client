@@ -1,0 +1,56 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#protocol-signatures"
+
+# Protocol Signatures
+#
+# Every [Protocol Message](#protocol-messages) will contain a digital signature. Unless otherwise specified, these
+# signatures will always be calculated the same way:
+# 
+# Each digital signature will be calculated over the following information (in this order):
+# 
+# 1. The value of the top-level `!pkd-context` attribute.
+# 2. The value of the top-level `action` attribute.
+# 3. The JSON serialization of the top-level `message` attribute.
+#    Object keys **MUST** be sorted in ASCII byte order, and there **MUST** be no duplicate keys.
+# 4. The value of the top-level `recent-merkle-root` attribute.
+# 
+# To ensure domain separation, we will use [PASETO's PAE()](https://github.com/paseto-standard/paseto-spec/blob/master/docs/01-Protocol-Versions/Common.md#pae-definition)
+# function, with a tweak: We will insert the top-level key (`!pkd-context`, `action`, `message`, `recent-merkle-root`)
+# before each piece.
+# 
+# For example, a Python function might look like this:
+# 
+# ```python
+# def signPayload(secret_key, payload):
+#     payloadToSign = preAuthEncode([
+#         b'!pkd-context',
+#         payload['!pkd-context'],
+#         b'action',
+#         payload['action'],
+#         b'message',
+#         json_stringify(sort_by_key(payload['message'])),
+#         b'recent-merkle-root',
+#         payload['recent-merkle-root'],
+#     ])
+#     return base64url(crypto_sign(secret_key, payloadToSign))
+# ```
+# 
+# The `!pkd-context` strings are intended to provide domain separation. 
+# 
+# Raw hashes and signatures without any domain separation in the direct scope of this specification are considered a 
+# security vulnerability. 
+# 
+# Raw hashes or signatures in the Merkle Tree, or in protocols built atop the Public Key Directory, are not considered
+# security vulnerabilities in our specification.
+
+[[spec]]
+level = "MUST"
+quote = '''
+Object keys **MUST** be sorted in ASCII byte order, and there **MUST** be no duplicate keys.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Object keys **MUST** be sorted in ASCII byte order, and there **MUST** be no duplicate keys.
+'''
+

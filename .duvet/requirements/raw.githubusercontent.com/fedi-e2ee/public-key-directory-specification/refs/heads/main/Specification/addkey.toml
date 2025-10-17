@@ -1,0 +1,38 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#addkey"
+
+# AddKey
+#
+# An `AddKey` message associated with an Actor is intended to associate a new Public Key to this actor.
+# 
+# The first `AddKey` for any given Actor **MUST** be self-signed by the same public key being added. Every subsequent
+# `AddKey` must be signed by an existing, non-revoked public key. 
+# 
+# Self-signing is not permitted for any `AddKey` while a valid public key exists for this user. A successful `BurnDown`,
+# or `RevokeKeyThirdParty` of their last public key, permits another self-signed `AddKey`.
+# 
+# The first `AddKey` will not have a `key-id` outside of the message.  Every subsequent `AddKey` for a given Actor 
+# **SHOULD** have a `key-id`.
+# 
+# All `AddKey` messages for a given actor must be sent from the actor's Fediverse Server, which **MUST** support HTTP 
+# Signatures.
+
+[[spec]]
+level = "MUST"
+quote = '''
+The first `AddKey` for any given Actor **MUST** be self-signed by the same public key being added.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Every subsequent `AddKey` for a given Actor
+**SHOULD** have a `key-id`.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+All `AddKey` messages for a given actor must be sent from the actor's Fediverse Server, which **MUST** support HTTP
+Signatures.
+'''
+

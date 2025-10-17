@@ -1,0 +1,29 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#passive-gossip-mirroring"
+
+# Passive Gossip (Mirroring)
+#
+# Third-party software and other Public Key Directory instances can be configured to stream new Protocol Messages from the
+# target PKD instance to store locally.
+# 
+# The encrypted attributes will always be copied onto mirrors.
+# 
+# Mirrors **MAY** cache the corresponding plaintext fields from the source directory, provided 
+# they adhere to the [cache invalidation](#mirror-plaintext-cache-invalidation) specification.
+# 
+# Replica instances **SHOULD** provide [witness co-signatures](#witness-co-signing) to the Sigsum transparency log that
+# the source PKD is built atop.
+
+[[spec]]
+level = "MAY"
+quote = '''
+Mirrors **MAY** cache the corresponding plaintext fields from the source directory, provided
+they adhere to the [cache invalidation](#mirror-plaintext-cache-invalidation) specification.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Replica instances **SHOULD** provide [witness co-signatures](#witness-co-signing) to the Sigsum transparency log that
+the source PKD is built atop.
+'''
+

@@ -1,0 +1,61 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#protocol-message-encryption"
+
+# Protocol Message Encryption
+#
+# `BurnDown` messages **MUST NOT** be encrypted.
+# 
+# When encryption is chosen, the Protocol Message **MUST** be serialized as a JSON string and then encrypted according to
+# the specific HPKE cipher suite advertised by the Public Key Directory, using the given public key.
+# 
+# Users **MAY** pad the plaintext before encryption with additional whitespace to their desired length, but **SHOULD** 
+# keep their plaintext JSON blobs smaller than 16 MiB (16,777,216 bytes).
+# 
+# When encrypting, the AAD parameter of the HPKE encryption **MUST** be set to the value of the `!pkd-context` field.
+# 
+# The result of the ciphertext will be encoded with unpadded [base64url](https://datatracker.ietf.org/doc/html/rfc4648#section-5).
+# 
+# The message emitted to the Public Key Directory will consist of the following elements:
+# 
+# ```json5
+# {
+#   /* This is always included. */
+#   "!pkd-context": "https://github.com/fedi-e2ee/public-key-directory/v1",
+#   /* The value of encrypted-message MUST be an unpadded base64url-encoded string. */
+#   "encrypted-message": "..."
+# }
+# ```
+
+[[spec]]
+level = "MUST"
+quote = '''
+`BurnDown` messages **MUST NOT** be encrypted.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+When encryption is chosen, the Protocol Message **MUST** be serialized as a JSON string and then encrypted according to
+the specific HPKE cipher suite advertised by the Public Key Directory, using the given public key.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Users **MAY** pad the plaintext before encryption with additional whitespace to their desired length, but **SHOULD**
+keep their plaintext JSON blobs smaller than 16 MiB (16,777,216 bytes).
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+When encrypting, the AAD parameter of the HPKE encryption **MUST** be set to the value of the `!pkd-context` field.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+*/
+"!pkd-context": "https://github.com/fedi-e2ee/public-key-directory/v1",
+/* The value of encrypted-message MUST be an unpadded base64url-encoded string.
+'''
+

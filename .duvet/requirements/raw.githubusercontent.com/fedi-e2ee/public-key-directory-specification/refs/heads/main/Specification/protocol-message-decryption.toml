@@ -1,0 +1,26 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#protocol-message-decryption"
+
+# Protocol Message Decryption
+#
+# If `encrypted-message` was provided by the HTTP request, after verifying the HTTP Signature, decode this value from
+# encoded with unpadded [base64url](https://datatracker.ietf.org/doc/html/rfc4648#section-5) then attempt to decrypt it.
+# Ensure the AAD parameter is set to the value of the `!pkd-context` field. 
+# 
+# Decryption failures count as rejections and incur a [rate-limiting penalty](#rate-limiting-bad-requests).
+# 
+# The result of a successful decryption **MUST** be a string that corresponds to a JSON-encoded Protocol Message. This
+# JSON blob **MAY** have additional whitespace appended to it.
+
+[[spec]]
+level = "MUST"
+quote = '''
+The result of a successful decryption **MUST** be a string that corresponds to a JSON-encoded Protocol Message.
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+This
+JSON blob **MAY** have additional whitespace appended to it.
+'''
+

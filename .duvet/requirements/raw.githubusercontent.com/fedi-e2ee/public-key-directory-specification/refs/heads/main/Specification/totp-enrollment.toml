@@ -1,0 +1,30 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#totp-enrollment"
+
+# TOTP Enrollment
+#
+# TOTP secret keys must be 256 bits of randomness. This secret value will be encoded with base32
+# ([RFC 4648, section 6](https://www.rfc-editor.org/rfc/rfc4648.html#section-6)) when served to the end users (e.g., 
+# via a QR code).
+# 
+# This secret must be shared with the Public Key Directory instance, [encrypted with HPKE like Protocol Messages](#encryption-of-protocol-messages).
+# 
+# In addition, the one-time passwords for two successive time windows must be included. Both of these one-time passwords
+# **MUST** be valid for the decrypted secret key before it is accepted by the Public Key Directory.
+# 
+# This operation **MUST** fail if there is already a TOTP secret enrolled for an instance.
+# 
+# See the [corresponding JSON REST API endpoint](#post-apitotpenroll) for details.
+
+[[spec]]
+level = "MUST"
+quote = '''
+Both of these one-time passwords
+**MUST** be valid for the decrypted secret key before it is accepted by the Public Key Directory.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+This operation **MUST** fail if there is already a TOTP secret enrolled for an instance.
+'''
+

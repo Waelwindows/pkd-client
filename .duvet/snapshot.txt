@@ -1,0 +1,258 @@
+SPECIFICATION: [Public Key Directory Specification](https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md)
+  SECTION: [Notation and Conventions](#notation-and-conventions)
+    TEXT[!MUST]: The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**", "**SHALL NOT**", "**SHOULD**", "**SHOULD NOT**",
+    TEXT[!MUST]: "**RECOMMENDED**", "**MAY**", and "**OPTIONAL**" in this document are to be interpreted as described in
+    TEXT[!MUST]: [RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
+
+  SECTION: [Message Blocks](#message-blocks)
+    TEXT[!MUST]: Any other machine **MUST** be able to reproduce the same state as the Public Key Directory by replaying the entire
+    TEXT[!MUST]: message history from the first block to the current one.
+    TEXT[!MUST]: Each Protocol Message **MUST** be unique.
+    TEXT[!MUST]: Public Key Directory servers **MUST** reject any replayed Protocol Message,
+    TEXT[!MUST]: even if it's otherwise valid.
+    TEXT[!SHOULD]: Implementations **SHOULD** provide a distinct error message for when a unique message has already been accepted and
+    TEXT[!SHOULD]: processed by the system in a very recent period of time.
+    TEXT[!MUST]: This **MUST** be distinct from an error condition.
+
+  SECTION: [Protocol Signatures](#protocol-signatures)
+    TEXT[!MUST]:    Object keys **MUST** be sorted in ASCII byte order, and there **MUST** be no duplicate keys.
+
+  SECTION: [Key Identifiers](#key-identifiers)
+    TEXT[!SHOULD]: Every message except revocations and the first `AddKey` for an Actor **SHOULD** include a `key-id` value.
+    TEXT[!MUST]: The `key-id` attribute **MUST NOT** be an encoded representation of the public key.
+
+  SECTION: [Revocation Tokens](#revocation-tokens)
+    TEXT[!MAY]: These values **MAY** be encrypted and stored in case of emergency.
+
+  SECTION: [Requirements for Auxiliary Data Extensions](#requirements-for-auxiliary-data-extensions)
+    TEXT[!SHOULD]: Being very strict about the format of the data accepted by a given extension is highly **RECOMMENDED**.
+
+  SECTION: [Timestamps](#timestamps)
+    TEXT[!MUST]: Implementations **MUST NOT** truncate UNIX timestamps to 32 bits.
+
+  SECTION: [Hostile nation state seeks to abuse _Right To Be Forgotten_ mechanisms to cover up an unlawful intrusion.](#hostile-nation-state-seeks-to-abuse-right-to-be-forgotten-mechanisms-to-cover-up-an-unlawful-intrusion)
+    TEXT[!MUST]: To address this risk, any software building E2EE on top of the Public Key Directory **MUST** immediately demote the
+    TEXT[!MUST]: trust status of any participants that receive a successful BurnDown.
+
+  SECTION: [Attacker sends spoofed messages from a compromised Fediverse server.](#attacker-sends-spoofed-messages-from-a-compromised-fediverse-server)
+    TEXT[!MUST]: All other Protocol Messages must be signed by the user's secret key, which the Fediverse server **MUST NOT** possess.
+
+  SECTION: [Cosmic ray causes a bit-flip on stored data or the result of a computation.](#cosmic-ray-causes-a-bit-flip-on-stored-data-or-the-result-of-a-computation)
+    TEXT[!SHOULD]: To mitigate this risk, participants in this network (users and Fediverse Servers) **SHOULD** send Protocol Messages to
+    TEXT[!SHOULD]: multiple Public Key Directory servers and, in turn, poll multiple servers.
+    TEXT[!SHOULD]: Clients **SHOULD** additionally be configured
+    TEXT[!SHOULD]: to require a quorum before trusting its responses.
+
+  SECTION: [Malicious instance administrator attempts to censor Fireproof messages to retain control.](#malicious-instance-administrator-attempts-to-censor-fireproof-messages-to-retain-control)
+    TEXT[!SHOULD]: For this reason, users **SHOULD** encrypt all of their Protocol Messages, not just `Fireproof` messages.
+    TEXT[!SHOULD]: It is further **RECOMMENDED** for client software to make this encryption the default behavior.
+
+  SECTION: [Attacker submits contraband as auxiliary data.](#attacker-submits-contraband-as-auxiliary-data)
+    TEXT[!SHOULD]: To prevent this risk, extensions **SHOULD** be strict about the data they accept.
+
+  SECTION: [Protocol Messages](#protocol-messages)
+    TEXT[!MUST]: Dictionary keys **MUST** be unique within the same level.
+    TEXT[!SHOULD]: Dictionary keys **SHOULD** be sorted.
+    TEXT[!MAY]: Participants **MAY** use whitespace, but it is not required or recommended.
+    TEXT[!SHOULD]: Some protocol messages **SHOULD** also include a top level `"key-id"` attribute, which will help implementations select
+    TEXT[!SHOULD]: one of many public keys to validate the signature.
+    TEXT[!MAY]: If no `key-id` is provided, each valid public key **MAY** be tried.
+
+  SECTION: [AddKey](#addkey)
+    TEXT[!MUST]: The first `AddKey` for any given Actor **MUST** be self-signed by the same public key being added.
+    TEXT[!SHOULD]: Every subsequent `AddKey` for a given Actor
+    TEXT[!SHOULD]: **SHOULD** have a `key-id`.
+    TEXT[!MUST]: All `AddKey` messages for a given actor must be sent from the actor's Fediverse Server, which **MUST** support HTTP
+    TEXT[!MUST]: Signatures.
+
+  SECTION: [RevokeKey](#revokekey)
+    TEXT[!MUST]: Attempting to issue a `RevokeKey` **MUST** fail unless there is another public key associated with this Actor.
+
+  SECTION: [RevokeKeyThirdParty Validation Steps](#revokekeythirdparty-validation-steps)
+    TEXT[!SHOULD]:    (In practice, this **SHOULD** only be one, but if that's ever not the case, we revoke them all here.)
+
+  SECTION: [MoveIdentity](#moveidentity)
+    TEXT[!MUST]: The message **MUST** be signed by a valid secret key for the `old-actor`, whereas the HTTP Signature **MUST** come from
+    TEXT[!MUST]: the new Fediverse Server instance.
+    TEXT[!MUST]: This message **MUST** be rejected if there are existing public keys for the target `new-actor`.
+
+  SECTION: [Fireproof](#fireproof)
+    TEXT[!MAY]: This message **MAY** be sent out-of-band to the Public Key Directory without the Fediverse server's involvement.
+
+  SECTION: [Encryption of Protocol Messages](#encryption-of-protocol-messages)
+    TEXT[!MAY]: Protocol Messages **MAY** be sent in plaintext at the HTTP layer, or encrypted using [HPKE (RFC 9180)](https://datatracker.ietf.org/doc/rfc9180/).
+    TEXT[!MUST]: When encryption is chosen, the client software **MUST** use a specific public key provided by the Public Key Directory
+    TEXT[!MUST]: server for this purpose.
+    TEXT[!SHOULD]: The Public Key Directory's public key **MAY** rotate frequently, and **SHOULD** be fetched from the server and cached
+    TEXT[!SHOULD]: client-side for no more than 24 hours.
+
+  SECTION: [Protocol Message Encryption](#protocol-message-encryption)
+    TEXT[!MUST]: `BurnDown` messages **MUST NOT** be encrypted.
+    TEXT[!MUST]: When encryption is chosen, the Protocol Message **MUST** be serialized as a JSON string and then encrypted according to
+    TEXT[!MUST]: the specific HPKE cipher suite advertised by the Public Key Directory, using the given public key.
+    TEXT[!SHOULD]: Users **MAY** pad the plaintext before encryption with additional whitespace to their desired length, but **SHOULD**
+    TEXT[!SHOULD]: keep their plaintext JSON blobs smaller than 16 MiB (16,777,216 bytes).
+    TEXT[!MUST]: When encrypting, the AAD parameter of the HPKE encryption **MUST** be set to the value of the `!pkd-context` field.
+    TEXT[!MUST]: */
+    TEXT[!MUST]:   "!pkd-context": "https://github.com/fedi-e2ee/public-key-directory/v1",
+    TEXT[!MUST]:   /* The value of encrypted-message MUST be an unpadded base64url-encoded string.
+
+  SECTION: [Protocol Message Decryption](#protocol-message-decryption)
+    TEXT[!MUST]: The result of a successful decryption **MUST** be a string that corresponds to a JSON-encoded Protocol Message.
+    TEXT[!MAY]: This
+    TEXT[!MAY]: JSON blob **MAY** have additional whitespace appended to it.
+
+  SECTION: [Rate-Limiting Bad Requests](#rate-limiting-bad-requests)
+    TEXT[!MAY]: Public Key Directories **MAY** specify a maximum time between requests from misbehaving instances.
+    TEXT[!MAY]: Attempting to send requests that trigger rate limit rejection **MAY** incur additional penalties, depending on server
+    TEXT[!MAY]: configuration, but it isn't required.
+    TEXT[!MAY]: Public Key Directories **MAY** also permanently block Fediverse Servers that
+    TEXT[!MAY]: routinely misbehave at their operator's discretion.
+    TEXT[!MUST]: [TOTP Messages](#totp) **MUST** employ aggressive rate-limiting for incorrect guesses, but for which the HTTP Signature
+    TEXT[!MUST]: was valid (i.e., the request originated from the instance).
+
+  SECTION: [Protocol Message Parsing](#protocol-message-parsing)
+    TEXT[!MAY]: The blob **MAY** be encrypted from the client software.
+    TEXT[!MUST]: Protocol Messages encrypted with HPKE in this way **MUST** always include an HTTP Signature header, and it **MUST** be
+    TEXT[!MUST]: valid.
+    TEXT[!MAY]: Plaintext HTTP Requests containing these Protocol Messages **MAY** be signed with an HTTP Signature.
+    TEXT[!MUST]: Encrypted Protocol messages **MUST** be decrypted after the signature verification is complete.
+    TEXT[!MUST]: If encryption was used, and the decrypted Protocol Message is a `BurnDown`, the Public Key Directory **MUST** discard
+    TEXT[!MUST]: it.
+    TEXT[!MUST]: BurnDown messages **MUST** be sent unencrypted.
+    TEXT[!MAY]: The instance is responsible for ensuring that only administrators
+    TEXT[!MAY]: **MAY** send a`BurnDown` to a Public Key Directory.
+
+  SECTION: [Handling Protocol Messages](#handling-protocol-messages)
+    TEXT[!MUST]: Every Protocol Message received by a Public Key Directory **MUST** be unique.
+    TEXT[!MUST]: Additionally, the timestamp for most
+    TEXT[!MUST]: message types (except `RevokeKeyThirdParty`) **MUST** be present and within a reasonable window.
+    TEXT[!MUST]: Public Key Directories
+    TEXT[!MUST]: **MAY** configure a preferred time window for timestamps, but it **MUST** be no greater than 30 days (2592000 seconds).
+    TEXT[!MAY]: Servers **MAY** count this as an invalid message
+    TEXT[!MAY]: that incurs a rate limit penalty, but it is not required.
+    TEXT[!MUST]: If the action is one of the following,
+    TEXT[!MUST]: a valid HTTP Signature **MUST** have been sent with the message: `AddKey`, `BurnDown`.
+    TEXT[!MUST]: This behavior
+    TEXT[!MUST]: **MUST** implement the validation steps relevant to the appropriate Protocol Message.
+
+  SECTION: [TOTP Enrollment](#totp-enrollment)
+    TEXT[!MUST]: Both of these one-time passwords
+    TEXT[!MUST]: **MUST** be valid for the decrypted secret key before it is accepted by the Public Key Directory.
+    TEXT[!MUST]: This operation **MUST** fail if there is already a TOTP secret enrolled for an instance.
+
+  SECTION: [TOTP Disenrollment](#totp-disenrollment)
+    TEXT[!MUST]: This operation **MUST** fail if there is no TOTP secret enrolled for an instance.
+
+  SECTION: [TOTP Signatures](#totp-signatures)
+    TEXT[!MUST]: Each message-equivalent object **MUST** have an `actor-id` field, which allows the Public Key Directory software know
+    TEXT[!MUST]: which public key to use when verifying the message.
+    TEXT[!MUST]: The Public Key Directory software **MUST** verify that the Actor ID belongs to the instance in scope for the TOTP.
+    TEXT[!MUST]: Additionally, the HTTP Signature on the HTTP request body **MUST** also match the public key for the same actor.
+
+  SECTION: [JSON REST API](#json-rest-api)
+    TEXT[!MUST]: Public Key Directory software **MUST NOT** support the HMAC, RSA, ECDSA, or JWS signature algorithms from RFC 9421.
+
+  SECTION: [GET api/extensions](#get-api-extensions)
+    TEXT[!MAY]: Extensions **MAY** include optional additional fields, if necessary, in the above table.
+
+  SECTION: [POST api/revoke](#post-api-revoke)
+    TEXT[!MUST]: The following HTTP request parameters **MUST** be included:
+
+  SECTION: [POST api/totp/disenroll](#post-api-totp-disenroll)
+    TEXT[!MUST]: The following HTTP request parameters **MUST** be included:
+
+  SECTION: [POST api/totp/enroll](#post-api-totp-enroll)
+    TEXT[!MUST]: The following HTTP request parameters **MUST** be included:
+
+  SECTION: [POST api/totp/rotate](#post-api-totp-rotate)
+    TEXT[!MUST]: The following HTTP request parameters **MUST** be included:
+
+  SECTION: [Passive Gossip (Mirroring)](#passive-gossip-mirroring)
+    TEXT[!MAY]: Mirrors **MAY** cache the corresponding plaintext fields from the source directory, provided
+    TEXT[!MAY]: they adhere to the [cache invalidation](#mirror-plaintext-cache-invalidation) specification.
+    TEXT[!SHOULD]: Replica instances **SHOULD** provide [witness co-signatures](#witness-co-signing) to the Sigsum transparency log that
+    TEXT[!SHOULD]: the source PKD is built atop.
+
+  SECTION: [Trusted Mirrors](#trusted-mirrors)
+    TEXT[!MAY]: If the source Public Key Directory trusts the mirror's operators, the source **MAY** republish the symmetric key used
+    TEXT[!MAY]: to encrypt that Protocol Message's attributes, encrypted using HPKE with the mirror's latest public key (i.e., from
+    TEXT[!MAY]: their most recent Checkpoint).
+
+  SECTION: [Mirror Plaintext Cache Invalidation](#mirror-plaintext-cache-invalidation)
+    TEXT[!MUST]: The replicated ciphertext **MAY** be persisted indefinitely, but regardless of the trust status of a given Mirror, if
+    TEXT[!MUST]: the mirror has access to the plaintext (whether by caching a copy or by `rewrapped-keys`), the Mirror **MUST**
+    TEXT[!MUST]: occasionally attempt to verify that the source server has not deliberately wiped their copy of the symmetric key.
+    TEXT[!MUST]: If the source has, the mirror **MUST** do the same.
+    TEXT[!SHOULD]: When processing a request for a replicated record, checking the status of the upstream record is **RECOMMENDED** if it
+    TEXT[!SHOULD]: has not been checked in the past 24 hours.
+    TEXT[!MAY]: If the source comes back online, the
+    TEXT[!MAY]: mirror **MAY** re-cache the symmetric keys and/or plaintext.
+
+  SECTION: [Witness Co-Signing](#witness-co-signing)
+    TEXT[!MUST]: At least
+    TEXT[!MUST]: one witness **MUST** also validate that the current state is deterministically reproducible from the history of the
+    TEXT[!MUST]: transparency log.
+
+  SECTION: [Protocol Message Encryption](#protocol-message-encryption-1)
+    TEXT[!MAY]: The entirety of a Protocol Message **MAY** be encrypted, client-side, using [HPKE (RFC 9180)](https://datatracker.ietf.org/doc/rfc9180/).
+    TEXT[!MAY]: Any currently acceptable HPKE algorithm **MAY** be used
+    TEXT[!MAY]: if the client and server both support it.
+    TEXT[!MUST]: For the current version of the protocol, clients and servers **MUST** support the
+    TEXT[!MUST]: [DHKEM(X25519, HKDF-SHA256) with HKDF-SHA256 and ChaCha20Poly1305](https://www.rfc-editor.org/rfc/rfc9180.html#name-dhkemx25519-hkdf-sha256-hkdf)
+    TEXT[!MUST]: cipher suite.
+
+  SECTION: [Recent Merkle Root Included in Plaintext Commitments](#recent-merkle-root-included-in-plaintext-commitments)
+    TEXT[!MUST]: Which
+    TEXT[!MUST]: root is selected **MUST** be stored alongside the ciphertext.
+    TEXT[!SHOULD]: Clients are **RECOMMENDED** to use the Merkle root of the most recent Protocol Message.
+    TEXT[!SHOULD]: If there are N accepted messages in the ledger, the selected Merkle root **SHOULD** be no more than log_2(N)^2
+    TEXT[!SHOULD]:    messages old (rounded up to the nearest whole number).
+    TEXT[!MUST]: Public Key Directories **MUST NOT** reject messages newer than
+    TEXT[!MUST]:    this threshold on basis of staleness.
+    TEXT[!MUST]: To tolerate large transaction volumes in a short window of time, the chosen Merkle root **MUST** be at least in the
+    TEXT[!MUST]:    most recent N/2 messages (for N currently accepted Protocol Messages).
+    TEXT[!MAY]: Public Key Directories **MAY** reject these
+    TEXT[!MAY]:    messages due to staleness, especially if the Directory isn't experiencing significant throughput, or if an Actor
+    TEXT[!MAY]:    submits multiple Protocol Messages tied to a Merkle root too old to satisfy rule 2.
+    TEXT[!MAY]: However, if there is an enormous spike in traffic, Public Key Directories **MAY** tolerate as far back as 500,000,
+    TEXT[!MAY]: provided no two Protocol Messages from the same actor reuse the same "recent" Merkle root.
+    TEXT[!MUST]: For the first message in a PKD, the "recent" Merkle root **MUST** be set to a sequence of 32 `0x00` bytes.
+
+  SECTION: [Rules For Cryptography Implementors](#rules-for-cryptography-implementors)
+    TEXT[!MUST]: Userspace random number generators (e.g., OpenSSL's
+    TEXT[!MUST]: `RAND_bytes()`) **MUST NOT** be used.
+    TEXT[!MUST]: However, if the data
+    TEXT[!MUST]: being encoded or decoded is a secret (e.g., plaintext or cryptography key), the codec **MUST** be implemented in
+    TEXT[!MUST]: constant-time.
+    TEXT[!MUST]: When comparing cryptographic outputs, a constant-time comparison **MUST** always be used.
+
+  SECTION: [Revocation and Account Recovery](#revocation-and-account-recovery)
+    TEXT[!MUST]: If a third party issues a `RevokeKeyThirdParty` with a valid revocation token for a fireproof user's only valid public
+    TEXT[!MUST]: key, the system **MUST** prioritize handling the key compromise as a higher priority.
+
+  SECTION: [Position Statement From the Authors](#position-statement-from-the-authors)
+    TEXT[!SHOULD]: Security researchers and whistleblowers **SHOULD** keep up-to-date on any use of `BurnDown` in their social graph, as
+    TEXT[!SHOULD]: well as any suspicious `AddKey` messages for users that have no interest in end-to-end encryption.
+
+  SECTION: [Availability](#availability)
+    TEXT[!SHOULD]: Client software **SHOULD** route Protocol Messages to more than one Public Key Directory, in case of catastrophic
+    TEXT[!SHOULD]: outages or data corruption, as outlined in [the threat model](#cosmic-ray-causes-a-bit-flip-on-stored-data-or-the-result-of-a-computation).
+    TEXT[!SHOULD]: Each Public Key Directory **SHOULD** use a different symmetric key for attribute encryption.
+    TEXT[!MAY]: Fediverse Servers **MAY**
+    TEXT[!MAY]: accept batches of different Protocol Messages (one for each Public Key Directory), and then fan them out asynchronously.
+    TEXT[!SHOULD]: Clients **SHOULD** also use a [recent Merkle root](#recent-merkle-root-included-in-plaintext-commitments) from the
+    TEXT[!SHOULD]: Sigsum instance tied to that particular Public Key Directory.
+    TEXT[!SHOULD]: When requesting the public keys or auxiliary data for a specific ActivityPub actor, clients **SHOULD** query multiple
+    TEXT[!SHOULD]: Public Key Directories.
+    TEXT[!SHOULD]: The **RECOMMENDED** behavior is to require a specific entry exists in multiple PKDs to meet some
+    TEXT[!SHOULD]: client-side-configurable Quorum, and reject public keys that have not yet been broadcast to, and accepted by, sufficient
+    TEXT[!SHOULD]: Public Key Directory servers.
+
+  SECTION: [Reasoning for Encryption of Protocol Messages from Clients](#reasoning-for-encryption-of-protocol-messages-from-clients)
+    TEXT[!MUST]: The public key **MUST** be fetched directly from each Public Key Directory.
+    TEXT[!MUST]: Client software **MUST NOT** trust any
+    TEXT[!MUST]: public key provided by the Fediverse Server.
+    TEXT[!MUST]: [`BurnDown`](#burndown) messages **MUST NOT** be encrypted this way.
+    TEXT[!MUST]: Therefore, the instance administration team **MUST** be the
+    TEXT[!MUST]: only entities capable of issuing a BurnDown.

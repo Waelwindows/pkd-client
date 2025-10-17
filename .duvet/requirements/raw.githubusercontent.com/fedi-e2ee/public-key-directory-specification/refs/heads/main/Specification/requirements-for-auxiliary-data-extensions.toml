@@ -1,0 +1,14 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#requirements-for-auxiliary-data-extensions"
+
+# Requirements for Auxiliary Data Extensions
+#
+# Being very strict about the format of the data accepted by a given extension is highly **RECOMMENDED**.
+# 
+# See [the relevant threat model entry](#attacker-submits-contraband-as-auxiliary-data)_
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Being very strict about the format of the data accepted by a given extension is highly **RECOMMENDED**.
+'''
+

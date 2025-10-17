@@ -1,0 +1,16 @@
+[workspace]
+resolver = "3"
+members = [
+    "src/pkd_core",
+]
+
+# Needed to appease crane
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+
+[workspace.metadata.crane]
+name = "pkd"
+
+[workspace.dependencies]
+uniffi = "0.29.4"

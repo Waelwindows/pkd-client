@@ -1,0 +1,28 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#revocation-and-account-recovery"
+
+# Revocation and Account Recovery
+#
+# Public key revocation is a thorny topic, and is difficult to balance for all threat models.
+# 
+# Some users may want the ability to re-establish themselves in the protocol, no matter how badly they mismanage their 
+# keys. Thus, their instance being able to issue a [`BurnDown`](#burndown) is essential as a break-glass feature for 
+# account recovery.
+# 
+# Other users may expect a higher degree of security, and may wish to opt out of this `BurnDown` capability from their
+# Fediverse instance. Once they have opted out, the only way to undo opting out is by issuing an `UndoFireproof`.
+# 
+# [`RevokeKeyThirdParty`](#revokekeythirdparty) is an emergency feature that allows anyone to pull the plug on a 
+# compromised identity key. Every time one is issued, the community should pay close attention to the Actor affected by 
+# it.
+# 
+# If a third party issues a `RevokeKeyThirdParty` with a valid revocation token for a fireproof user's only valid public 
+# key, the system **MUST** prioritize handling the key compromise as a higher priority. This means that `Fireproof` is 
+# ignored in this edge case.
+
+[[spec]]
+level = "MUST"
+quote = '''
+If a third party issues a `RevokeKeyThirdParty` with a valid revocation token for a fireproof user's only valid public
+key, the system **MUST** prioritize handling the key compromise as a higher priority.
+'''
+

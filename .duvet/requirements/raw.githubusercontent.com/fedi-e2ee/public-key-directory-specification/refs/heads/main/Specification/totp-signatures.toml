@@ -1,0 +1,37 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#totp-signatures"
+
+# TOTP Signatures
+#
+# HTTP requests to enroll, disenroll, or rotate the TOTP secret will include a [construction congruent to protocol signatures](#protocol-signatures),
+# with the following tweaks:
+# 
+# * The `action` will simply be `totp-enroll`, `totp-disenroll`, or `totp-rotate`.
+# * The `message` key will be replaced with `enrollment`, `disenrollment`, or `rotation`.
+#     * Its contents will be serialized exactly the same as Protocol Messages, to facilitate code reuse.
+# * The `recent-merkle-root` will be omitted.
+# 
+# Each message-equivalent object **MUST** have an `actor-id` field, which allows the Public Key Directory software know
+# which public key to use when verifying the message.
+# 
+# The Public Key Directory software **MUST** verify that the Actor ID belongs to the instance in scope for the TOTP.
+# Additionally, the HTTP Signature on the HTTP request body **MUST** also match the public key for the same actor.
+
+[[spec]]
+level = "MUST"
+quote = '''
+Each message-equivalent object **MUST** have an `actor-id` field, which allows the Public Key Directory software know
+which public key to use when verifying the message.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+The Public Key Directory software **MUST** verify that the Actor ID belongs to the instance in scope for the TOTP.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Additionally, the HTTP Signature on the HTTP request body **MUST** also match the public key for the same actor.
+'''
+

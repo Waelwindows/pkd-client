@@ -1,0 +1,52 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#post-api-totp-rotate"
+
+# POST api/totp/rotate
+#
+# Purpose: Rotate the TOTP secret.
+# 
+# The following HTTP request parameters **MUST** be included:
+# 
+# | Request Parameter | Type   | Remarks                  |
+# |-------------------|--------|--------------------------|
+# | `!pkd-context`    | string | Domain separation        |
+# | `current-time`    | string | [Timestamp](#timestamps) |
+# | `rotation`        | object | See next table           |
+# | `signature`       | string | Signature of `rotation`  |
+# 
+# The `!pkd-context` field will be set to the ASCII string `fedi-e2ee:v1/api/totp/rotate`.
+# 
+# The enrollment object will consist of the following fields:
+# 
+# | Request Parameter  | Type   | Remarks                                                      |
+# |--------------------|--------|--------------------------------------------------------------|
+# | `actor-id`         | string | The Actor ID that produced the signature.                    |
+# | `key-id`           | string | The specific public key to use for this actor.               |
+# | `new-otp-current`  | string | One-Time Password (see [TOTP](#totp)), current time window.  | 
+# | `new-otp-previous` | string | One-Time Password (see [TOTP](#totp)), previous time window. |
+# | `new-totp-secret`  | string | HPKE-encrypted                                               |
+# | `old-otp`          | string | One-Time Password (see [TOTP](#totp))                        |
+# 
+# **Example Response**:
+# 
+# ```json5
+# {
+#   "!pkd-context": "fedi-e2ee:v1/api/totp/rotate",
+#   "success": true,
+#   "time": "1730909831"
+# }
+# ```
+# 
+# If there is no TOTP secret key enrolled for a specific instance, return an HTTP 400 error.
+# 
+# If the TOTP secret is enrolled, but `old-otp` is incorrect, return an HTTP 403 error. This should count as a penalty for
+# rate-limiting.
+# 
+# If the `new-otp-current` or `new-otp-previous` is invalid for the HPKE-encrypted secret (or if a decryption error 
+# occurs), then the Public Key Directory will return an HTTP 406 error.
+
+[[spec]]
+level = "MUST"
+quote = '''
+The following HTTP request parameters **MUST** be included:
+'''
+

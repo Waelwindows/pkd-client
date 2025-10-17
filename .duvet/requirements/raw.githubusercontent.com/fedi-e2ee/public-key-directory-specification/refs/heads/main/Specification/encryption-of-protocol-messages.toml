@@ -1,0 +1,32 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#encryption-of-protocol-messages"
+
+# Encryption of Protocol Messages
+#
+# Protocol Messages **MAY** be sent in plaintext at the HTTP layer, or encrypted using [HPKE (RFC 9180)](https://datatracker.ietf.org/doc/rfc9180/).
+# 
+# When encryption is chosen, the client software **MUST** use a specific public key provided by the Public Key Directory
+# server for this purpose. 
+# 
+# The Public Key Directory's public key **MAY** rotate frequently, and **SHOULD** be fetched from the server and cached 
+# client-side for no more than 24 hours. Public Key Directories are not required to rotate this public key.
+
+[[spec]]
+level = "MAY"
+quote = '''
+Protocol Messages **MAY** be sent in plaintext at the HTTP layer, or encrypted using [HPKE (RFC 9180)](https://datatracker.ietf.org/doc/rfc9180/).
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+When encryption is chosen, the client software **MUST** use a specific public key provided by the Public Key Directory
+server for this purpose.
+'''
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+The Public Key Directory's public key **MAY** rotate frequently, and **SHOULD** be fetched from the server and cached
+client-side for no more than 24 hours.
+'''
+

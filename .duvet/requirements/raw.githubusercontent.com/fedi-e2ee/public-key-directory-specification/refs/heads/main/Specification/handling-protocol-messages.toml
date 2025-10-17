@@ -1,0 +1,67 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#handling-protocol-messages"
+
+# Handling Protocol Messages
+#
+# Every Protocol Message received by a Public Key Directory **MUST** be unique. Additionally, the timestamp for most
+# message types (except `RevokeKeyThirdParty`) **MUST** be present and within a reasonable window. Public Key Directories
+# **MAY** configure a preferred time window for timestamps, but it **MUST** be no greater than 30 days (2592000 seconds).
+# 
+# After parsing the Protocol Message, verify that the `!pkd-context` matches the expected value for a Public Key Directory
+# Protocol Message. If it is absent or mismatched, discard the message. Servers **MAY** count this as an invalid message 
+# that incurs a rate limit penalty, but it is not required.
+# 
+# Once we have established the `!pkd-context` matches, the `action` should be examined. If the action is one of the following,
+# a valid HTTP Signature **MUST** have been sent with the message: `AddKey`, `BurnDown`.
+# 
+# If the `action` is not one of the expected values (see [Protocol Messages](#protocol-messages)), discard the message.
+# This may indicate a newer specification.
+# 
+# Next, pass the deserialized JSON to a handler (function, class, etc.) for that specific action type. This behavior
+# **MUST** implement the validation steps relevant to the appropriate Protocol Message.
+# 
+# After the message validation is complete, [commit the Protocol Message to Sigsum](#sigsum-integration). If the 
+# Sigsum integration fails, return an HTTP 500 response to the client and abort.
+# 
+# Finally, make the appropriate changes to the local database (based on what action is to be performed).
+
+[[spec]]
+level = "MUST"
+quote = '''
+Every Protocol Message received by a Public Key Directory **MUST** be unique.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Additionally, the timestamp for most
+message types (except `RevokeKeyThirdParty`) **MUST** be present and within a reasonable window.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Public Key Directories
+**MAY** configure a preferred time window for timestamps, but it **MUST** be no greater than 30 days (2592000 seconds).
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+Servers **MAY** count this as an invalid message
+that incurs a rate limit penalty, but it is not required.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+If the action is one of the following,
+a valid HTTP Signature **MUST** have been sent with the message: `AddKey`, `BurnDown`.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+This behavior
+**MUST** implement the validation steps relevant to the appropriate Protocol Message.
+'''
+

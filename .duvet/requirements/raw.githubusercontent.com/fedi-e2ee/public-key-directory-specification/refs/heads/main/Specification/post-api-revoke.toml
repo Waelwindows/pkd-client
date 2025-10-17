@@ -1,0 +1,36 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#post-api-revoke"
+
+# POST api/revoke
+#
+# Purpose: Accepts [`RevokeKeyThirdParty`](#revokekeythirdparty) messages.
+# 
+# The following HTTP request parameters **MUST** be included:
+# 
+# | Request Parameter  | Type   | Remarks                  |
+# |--------------------|--------|--------------------------|
+# | `!pkd-context`     | string | Domain separation        |
+# | `current-time`     | string | [Timestamp](#timestamps) |
+# | `revocation-token` | string | Revocation token         |
+# 
+# If the revocation token is valid, it will be processed and an HTTP 200 OK response will be returned.
+# 
+# If the revocation token is invalid, an HTTP 2204 No Content response will be returned.
+# 
+# Either way, the response body will only contain a `!pkd-context` header and a timestamp.
+# The `!pkd-context` field will be set to the ASCII string `fedi-e2ee:v1/api/revoke`.
+# 
+# **Example Response**:
+# 
+# ```json5
+# {
+#   "!pkd-context": "fedi-e2ee:v1/api/revoke",
+#   "time": "1730909831"
+# }
+# ```
+
+[[spec]]
+level = "MUST"
+quote = '''
+The following HTTP request parameters **MUST** be included:
+'''
+

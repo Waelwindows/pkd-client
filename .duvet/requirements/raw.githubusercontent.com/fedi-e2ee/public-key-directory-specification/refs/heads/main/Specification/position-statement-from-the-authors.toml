@@ -1,0 +1,32 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#position-statement-from-the-authors"
+
+# Position Statement From the Authors
+#
+# Any attempt to enable account recovery is necessarily a backdoor, no matter how it's designed or implemented. This is
+# tautology: granting access when you have no credentials to gain access is a violation of the integrity (and, sometimes,
+# the confidentiality) of a system.
+# 
+# Conversely, [security at the cost of usability comes at the cost of security](https://security.stackexchange.com/a/6116).
+# We introduced this capability in our designs in order to improve the usability of protocols that build upon our Public
+# Key Directory project. We include an explicit, reversible opt-out mechanism for any users that might feel threatened
+# by the existence of this capability.
+# 
+# We believe this strikes the right balance between security and usability. It's important that this is communicated
+# transparently to users, and they are made aware of the `Fireproof` opt-out mechanism (and its consequences).
+# 
+# Security researchers and whistleblowers **SHOULD** keep up-to-date on any use of `BurnDown` in their social graph, as
+# well as any suspicious `AddKey` messages for users that have no interest in end-to-end encryption. Both signals may
+# serve as clues that someone may be up to no good, but they could also indicate a harmless human error. Don't jump to
+# conclusions based on these issuances alone.
+# 
+# Finally, the entire point of using Transparency Logs is to force attackers to publish their activity, which enables
+# defenders and activists to be immediately aware of the potentially malicious actions. You cannot attack the network
+# to impersonate a flammable Actor without risking detection.
+
+[[spec]]
+level = "SHOULD"
+quote = '''
+Security researchers and whistleblowers **SHOULD** keep up-to-date on any use of `BurnDown` in their social graph, as
+well as any suspicious `AddKey` messages for users that have no interest in end-to-end encryption.
+'''
+

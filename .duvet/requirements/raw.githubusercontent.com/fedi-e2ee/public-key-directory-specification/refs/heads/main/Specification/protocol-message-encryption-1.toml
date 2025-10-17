@@ -1,0 +1,40 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#protocol-message-encryption-1"
+
+# Protocol Message Encryption
+#
+# The entirety of a Protocol Message **MAY** be encrypted, client-side, using [HPKE (RFC 9180)](https://datatracker.ietf.org/doc/rfc9180/).
+# 
+# The encryption process is described in [Encryption of Protocol Messages](#protocol-message-encryption).
+# 
+# The decryption process is described in [Decryption of Protocol Messages](#protocol-message-decryption).
+# 
+# The Public Key Directory chooses the cipher suite used for HPKE. Any currently acceptable HPKE algorithm **MAY** be used
+# if the client and server both support it.
+# 
+# For the current version of the protocol, clients and servers **MUST** support the
+# [DHKEM(X25519, HKDF-SHA256) with HKDF-SHA256 and ChaCha20Poly1305](https://www.rfc-editor.org/rfc/rfc9180.html#name-dhkemx25519-hkdf-sha256-hkdf)
+# cipher suite.
+# 
+# See [HPKE cipher suites](#hpke-cipher-suites) for more information.
+
+[[spec]]
+level = "MAY"
+quote = '''
+The entirety of a Protocol Message **MAY** be encrypted, client-side, using [HPKE (RFC 9180)](https://datatracker.ietf.org/doc/rfc9180/).
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+Any currently acceptable HPKE algorithm **MAY** be used
+if the client and server both support it.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+For the current version of the protocol, clients and servers **MUST** support the
+[DHKEM(X25519, HKDF-SHA256) with HKDF-SHA256 and ChaCha20Poly1305](https://www.rfc-editor.org/rfc/rfc9180.html#name-dhkemx25519-hkdf-sha256-hkdf)
+cipher suite.
+'''
+

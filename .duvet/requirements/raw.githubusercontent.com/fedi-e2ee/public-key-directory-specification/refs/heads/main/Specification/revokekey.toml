@@ -1,0 +1,19 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#revokekey"
+
+# RevokeKey
+#
+# A `RevokeKey` message marks an existing public key as untrusted. There is no undo operation for public key revocation. 
+# `RevokeKey` is but one mechanism for public key revocation, intended to be used by the Actor that normally possesses the
+# key.
+# 
+# Attempting to issue a `RevokeKey` **MUST** fail unless there is another public key associated with this Actor. The key
+# used to sign the `RevokeKey` cannot be the same as the key being revoked.
+# 
+# See [BurnDown](#burndown) for clearing all keys and starting over (unless [Fireproof](#fireproof) was ever issued).
+
+[[spec]]
+level = "MUST"
+quote = '''
+Attempting to issue a `RevokeKey` **MUST** fail unless there is another public key associated with this Actor.
+'''
+

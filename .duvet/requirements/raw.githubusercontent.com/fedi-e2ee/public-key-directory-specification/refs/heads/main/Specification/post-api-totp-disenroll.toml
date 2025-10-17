@@ -1,0 +1,47 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#post-api-totp-disenroll"
+
+# POST api/totp/disenroll
+#
+# Purpose: Remove the current TOTP secret stored in the Public Key Directory for the current instance.
+# 
+# The following HTTP request parameters **MUST** be included:
+# 
+# | Request Parameter | Type   | Remarks                      |
+# |-------------------|--------|------------------------------|
+# | `!pkd-context`    | string | Domain separation            |
+# | `current-time`    | string | [Timestamp](#timestamps)     |
+# | `disenrollment`   | object | See next table               |
+# | `signature`       | string | Signature of `disenrollment` |
+# 
+# The `!pkd-context` field will be set to the ASCII string `fedi-e2ee:v1/api/totp/disenroll`.
+# 
+# The disenrollment object will consist of the following fields:
+# 
+# | Request Parameter | Type   | Remarks                                        |
+# |-------------------|--------|------------------------------------------------|
+# | `actor-id`        | string | The Actor ID that produced the signature.      |
+# | `key-id`          | string | The specific public key to use for this actor. | 
+# | `otp`             | string | One-Time Password (see [TOTP](#totp))          |
+# 
+# **Example Response**:
+# 
+# ```json5
+# {
+#   "!pkd-context": "fedi-e2ee:v1/api/totp/disenroll",
+#   "success": true,
+#   "time": "1730909831"
+# }
+# ```
+# 
+# If there is no TOTP secret key enrolled for a specific instance, the OTP is ignored and a "success" response is 
+# returned.
+# 
+# If the TOTP secret is enrolled, but the OTP is incorrect, return an HTTP 403 error. This should count as a penalty for
+# rate-limiting.
+
+[[spec]]
+level = "MUST"
+quote = '''
+The following HTTP request parameters **MUST** be included:
+'''
+

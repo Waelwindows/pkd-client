@@ -1,0 +1,85 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#protocol-message-parsing"
+
+# Protocol Message Parsing
+#
+# The Public Key Directory expects a JSON blob in the HTTP request body. This should correspond to the structure of a
+# [Protocol Message](#protocol-messages).
+# 
+# The blob **MAY** be encrypted from the client software. See [Protocol Message Encryption](#protocol-message-encryption).
+# If so, the JSON blob will be a top-level message containing only `!pkd-context` and `encrypted-message`.
+# 
+# Protocol Messages encrypted with HPKE in this way **MUST** always include an HTTP Signature header, and it **MUST** be 
+# valid.
+# 
+# Plaintext HTTP Requests containing these Protocol Messages **MAY** be signed with an HTTP Signature. If it is, first
+# [verify the HTTP Signature](https://swicg.github.io/activitypub-http-signature/#how-to-verify-a-signature) on the
+# message, according to the ActivityPub specification.
+# 
+# Any invalid HTTP Signatures count as a rejection and incur a rate-limiting penalty, even if the Protocol Message type
+# does not require signatures.
+# 
+# Encrypted Protocol messages **MUST** be decrypted after the signature verification is complete. Decryption of Protocol
+# Messages is described [in a previous section](#protocol-message-decryption). Encryption is performed client-side by the
+# user.
+# 
+# If encryption was used, and the decrypted Protocol Message is a `BurnDown`, the Public Key Directory **MUST** discard 
+# it. BurnDown messages **MUST** be sent unencrypted. The instance is responsible for ensuring that only administrators 
+# **MAY** send a`BurnDown` to a Public Key Directory.
+# 
+# Some Protocol Messages require an HTTP Signature, even when sent in plaintext. A missing signature in these instances is
+# treated as invalid, and incurs a rate-limiting penalty.
+# 
+# The JSON blob should then be deserialized into an Object and handled appropriately (see next subsection).
+
+[[spec]]
+level = "MAY"
+quote = '''
+The blob **MAY** be encrypted from the client software.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Protocol Messages encrypted with HPKE in this way **MUST** always include an HTTP Signature header, and it **MUST** be
+valid.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Protocol Messages encrypted with HPKE in this way **MUST** always include an HTTP Signature header, and it **MUST** be
+valid.
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+Plaintext HTTP Requests containing these Protocol Messages **MAY** be signed with an HTTP Signature.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+Encrypted Protocol messages **MUST** be decrypted after the signature verification is complete.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+If encryption was used, and the decrypted Protocol Message is a `BurnDown`, the Public Key Directory **MUST** discard
+it.
+'''
+
+[[spec]]
+level = "MUST"
+quote = '''
+BurnDown messages **MUST** be sent unencrypted.
+'''
+
+[[spec]]
+level = "MAY"
+quote = '''
+The instance is responsible for ensuring that only administrators
+**MAY** send a`BurnDown` to a Public Key Directory.
+'''
+

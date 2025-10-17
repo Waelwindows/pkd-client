@@ -1,0 +1,18 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#totp-disenrollment"
+
+# TOTP Disenrollment
+#
+# This removes the TOTP shared secret for this instance stored in the Public Key Directory.
+# 
+# This disables TOTP verification for BurnDown messages issued by the entire instance.
+# 
+# This operation **MUST** fail if there is no TOTP secret enrolled for an instance.
+# 
+# See the [corresponding JSON REST API endpoint](#post-apitotpdisenroll) for details.
+
+[[spec]]
+level = "MUST"
+quote = '''
+This operation **MUST** fail if there is no TOTP secret enrolled for an instance.
+'''
+

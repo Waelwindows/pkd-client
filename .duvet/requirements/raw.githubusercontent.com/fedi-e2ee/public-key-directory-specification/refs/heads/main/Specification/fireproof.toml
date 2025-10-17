@@ -1,0 +1,21 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#fireproof"
+
+# Fireproof
+#
+# Where `BurnDown` resets the state for a given Actor to allow account recovery, `Fireproof` opts out of this recovery 
+# mechanism entirely. See [the relevant Security Considerations section](#revocation-and-account-recovery).
+# 
+# This message **MAY** be sent out-of-band to the Public Key Directory without the Fediverse server's involvement.
+# 
+# `Fireproof` is only intended to prevent `BurnDown` (which the instance hosting the Actor may perform without a valid
+# signature from the same Actor). It does not prevent users from having no valid public keys (i.e., if someone issues a
+# `RevokeKeyThirdParty` against their only trusted public key.)
+# 
+# If the user is already in Fireproof status, this message is rejected.
+
+[[spec]]
+level = "MAY"
+quote = '''
+This message **MAY** be sent out-of-band to the Public Key Directory without the Fediverse server's involvement.
+'''
+

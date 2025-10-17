@@ -1,0 +1,18 @@
+target = "https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#json-rest-api"
+
+# JSON REST API
+#
+# This section documents the JSON REST API available over HTTPS. Response bodies will be JSON (if the status code is 200).
+# If applicable, HTTP request bodies are also expected to be JSON.
+# 
+# Every HTTP response will include a signature over the HTTP response body, which will be sent as an additional HTTP
+# header, adhering to [RFC 9421 with EdDSA over edwards25519](https://www.rfc-editor.org/rfc/rfc9421.html#name-eddsa-using-curve-edwards25).
+# Public Key Directory software **MUST NOT** support the HMAC, RSA, ECDSA, or JWS signature algorithms from RFC 9421.
+# Only EdDSA and newer algorithms (e.g., post-quantum signatures in the future) may be used.
+
+[[spec]]
+level = "MUST"
+quote = '''
+Public Key Directory software **MUST NOT** support the HMAC, RSA, ECDSA, or JWS signature algorithms from RFC 9421.
+'''
+
