@@ -6,6 +6,7 @@
 #![deny(missing_docs)]
 #![deny(unsafe_code)]
 
+pub mod action;
 mod key;
 mod merkle;
 mod utils;
