@@ -71,6 +71,12 @@ impl Timestamp {
         Self(sec.as_secs().to_string())
     }
 
+    /// Returns the [`Timestamp`] represnting unix epoch.
+    #[allow(dead_code)]
+    pub(crate) fn epoch() -> Self {
+        Self("0".to_string())
+    }
+
     /// Returns the duration of this [`Timestamp`] since unix epoch
     ///
     /// # Example
@@ -98,9 +104,21 @@ pub struct Timestamped<T> {
 }
 
 impl<T> Timestamped<T> {
+    pub const fn new(time: Timestamp, inner: T) -> Self {
+        Self { time, inner }
+    }
+
     pub fn now(inner: T) -> Self {
         Self {
             time: Timestamp::now(),
+            inner,
+        }
+    }
+
+    #[allow(dead_code)]
+    pub(crate) fn epoch(inner: T) -> Self {
+        Self {
+            time: Timestamp::epoch(),
             inner,
         }
     }
