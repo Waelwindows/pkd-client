@@ -4,9 +4,9 @@ use crate::{
     utils::Timestamped,
 };
 
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(tag = "action")]
 /// The [`AddKey`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addkey) PDK message
+#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct AddOrRevokeKey {
     /// The inner content
     pub message: Timestamped<AddOrRevokeKeyInner<CipherText>>,

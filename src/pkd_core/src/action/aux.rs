@@ -3,9 +3,9 @@ use crate::{
     utils::Timestamped,
 };
 
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(tag = "action")]
 /// The [`AddAuxData`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#addauxdata) PDK message
+#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct AddAuxData {
     /// The ciphertext
     pub message: Timestamped<AuxData<AddAuxDataInner<CipherText>>>,
@@ -13,9 +13,9 @@ pub struct AddAuxData {
     pub symmetric_keys: AddAuxDataInner<SymmetricKey>,
 }
 
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(tag = "action")]
 /// The [`RevokeAuxData`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#revokeauxdata) PDK message
+#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct RevokeAuxData {
     /// The ciphertext
     pub message: Timestamped<AuxData<RevokeAuxDataInner<CipherText>>>,

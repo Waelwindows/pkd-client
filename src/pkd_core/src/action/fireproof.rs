@@ -3,9 +3,9 @@ use crate::{
     utils::Timestamped,
 };
 
-#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
-#[serde(tag = "action")]
 /// The [`UndoFireproof`](https://github.com/fedi-e2ee/public-key-directory-specification/blob/main/Specification.md#undofireproof) PDK message
+#[derive(Debug, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
+#[serde(rename_all = "kebab-case")]
 pub struct FireproofOrUndo {
     /// The ciphertext
     pub message: Timestamped<FireproofInner<CipherText>>,

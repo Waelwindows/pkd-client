@@ -46,7 +46,7 @@ impl Wrap for CipherText {
 /// Indicate the inner type is a symmetric key.
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct SymmetricKey(
-    #[serde(with = "crate::utils::serde_base64_secrecy")] secrecy::SecretBox<Vec<u8>>,
+    #[serde(with = "crate::utils::serde_base64_secrecy")] pub(crate) secrecy::SecretBox<Vec<u8>>,
 );
 
 impl SymmetricKey {
