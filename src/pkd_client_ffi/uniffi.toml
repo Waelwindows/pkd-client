@@ -1,2 +1,2 @@
 [bindings.python]
-cdylib_name = "pkd_client"
+cdylib_name = "pkd"

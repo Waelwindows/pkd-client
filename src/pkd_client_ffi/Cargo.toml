@@ -6,7 +6,7 @@ edition.workspace = true
 
 [lib]
 crate-type = ["cdylib", "staticlib"]
-name = "pkd_client"                  # This is our crate name in this tutorial
+name = "pkd"
 
 [dependencies]
 pkd_client = { path = "../pkd_client" }
