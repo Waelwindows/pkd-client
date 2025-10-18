@@ -1,6 +1,6 @@
 [workspace]
 resolver = "3"
-members = ["src/pkd_core"]
+members = ["src/*", "uniffi-bindgen"]
 
 # Needed to appease crane
 [workspace.package]

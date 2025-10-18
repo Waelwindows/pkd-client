@@ -1,6 +1,9 @@
+# Tempoary bindings
+out/
+
 # Rust
 target/
 
-# Nix 
+# Nix
 .direnv/
 result*

@@ -136,6 +136,7 @@
 
               wasm-bindgen-cli_0_2_100
 
+              maturin
               ktlint
               yapf
               pyright

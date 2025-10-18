@@ -1,0 +1,8 @@
+[package]
+name = "pkd_client"
+version = "0.1.0"
+license = "MIT"
+edition.workspace = true
+
+[dependencies]
+pkd_core = { path = "../pkd_core" }
