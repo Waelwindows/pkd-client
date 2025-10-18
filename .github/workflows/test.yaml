@@ -1,0 +1,38 @@
+name: "Test"
+on:
+  pull_request:
+  push:
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v5
+    - uses: wimpysworld/nothing-but-nix@v6
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      with:
+        nix-permission-edict: true
+    - uses: nixbuild/nix-quick-install-action@v34
+    - uses: cachix/cachix-action@v16
+      with:
+        name: pkd
+        # If you chose API tokens for write access OR if you have a private cache
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - run: nix flake check
+  build-python:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v5
+    - uses: wimpysworld/nothing-but-nix@v6
+      if: ${{ matrix.os == 'ubuntu-latest' }}
+      with:
+        nix-permission-edict: true
+    - uses: nixbuild/nix-quick-install-action@v34
+    - uses: cachix/cachix-action@v16
+      with:
+        name: pkd
+        # If you chose API tokens for write access OR if you have a private cache
+        authToken: '${{ secrets.CACHIX_AUTH_TOKEN }}'
+    - run: nix build .#pkd_client_ffi_python
