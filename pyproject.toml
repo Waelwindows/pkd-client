@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "pkd_client"
-readme = "README.md"
+# readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
     "Programming Language :: Rust",
@@ -20,3 +20,8 @@ dynamic = [
     "license",
     "keywords",
 ]
+
+[tool.maturin]
+# Build artifacts with the specified Cargo profile
+# profile = "release"
+manifest-path = "src/pkd_client_ffi/Cargo.toml"

@@ -6,6 +6,7 @@
     flake-utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
     crane.url = "github:ipetkov/crane";
+    crane-maturin.url = "github:Waelwindows/crane-maturin";
     advisory-db = {
       url = "github:rustsec/advisory-db";
       flake = false;
@@ -18,6 +19,7 @@
     flake-utils,
     rust-overlay,
     crane,
+    crane-maturin,
     advisory-db,
   }:
     flake-utils.lib.eachDefaultSystem
@@ -25,9 +27,10 @@
       system: let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [(import rust-overlay)];
+          overlays = [ (import rust-overlay) ];
         };
         craneLib = crane.mkLib pkgs;
+        cmLib = crane-maturin.mkLib crane pkgs;
 
         src = craneLib.cleanCargoSource ./.;
 
@@ -54,6 +57,13 @@
           // {
             inherit src;
             pname = "pkd_core";
+          }
+        );
+        pkd_client_ffi_python = cmLib.buildMaturinPackage (
+          individualCrateArgs
+          // {
+            inherit src;
+            pname = "pkd_client_ffi_python";
           }
         );
       in {
@@ -119,7 +129,7 @@
           );
         };
         packages = rec {
-          inherit pkd_core;
+          inherit pkd_core pkd_client_ffi_python;
         };
         devShells.default = with pkgs;
           pkgs.mkShell {
