@@ -45,7 +45,9 @@ impl Wrap for CipherText {
 
 /// Indicate the inner type is a symmetric key.
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
-pub struct SymmetricKey(#[serde(with = "crate::utils::serde_base64_secrecy")] secrecy::SecretBox<Vec<u8>>);
+pub struct SymmetricKey(
+    #[serde(with = "crate::utils::serde_base64_secrecy")] secrecy::SecretBox<Vec<u8>>,
+);
 
 impl SymmetricKey {
     /// Initialize a [`SymmetricKey`] in-place using function `f`
@@ -74,12 +76,12 @@ impl PartialEq for SymmetricKey {
         let mut diff = 0;
         // SAFETY: at this point we know lhs.len() == rhs.len()
         for (l, r) in lhs.iter().zip(rhs.iter()) {
-            diff |=  l ^ r;
+            diff |= l ^ r;
         }
         diff == 0
     }
 }
-impl Eq for SymmetricKey { }
+impl Eq for SymmetricKey {}
 
 impl Sealed for SymmetricKey {}
 impl Wrap for SymmetricKey {

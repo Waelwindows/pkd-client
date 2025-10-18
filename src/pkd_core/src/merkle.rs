@@ -93,7 +93,7 @@ mod tests {
         237, 60, 10, 1, 185, 34, 40, 32, 144, 184, 42, 67, 5, 93, 134, 110, 73, 36, 32, 55, 204,
         131, 96, 38, 27, 180, 204, 30, 165, 193, 12, 149,
     ]);
-    const KEY_ENCODED: &'static str = "pkd-mr-v1:7TwKAbkiKCCQuCpDBV2GbkkkIDfMg2AmG7TMHqXBDJU";
+    const KEY_ENCODED: &str = "pkd-mr-v1:7TwKAbkiKCCQuCpDBV2GbkkkIDfMg2AmG7TMHqXBDJU";
 
     #[test]
     fn encode() {

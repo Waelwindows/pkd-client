@@ -31,7 +31,7 @@ impl<P> Encrypted<P> {
     /// ```
     /// let cipher = vec![0x1];
     /// let enc = Encrypted::from_ciphertext(cipher.clone())
-    /// assert_eq!(enc.to_inner(), cipher)
+    /// assert_eq!(enc.into_inner(), cipher)
     /// ```
     pub const fn from_ciphertext(ciphertext: Vec<u8>) -> Self {
         Self {
@@ -46,9 +46,9 @@ impl<P> Encrypted<P> {
     /// ```
     /// let cipher = vec![0x1];
     /// let enc = Encrypted::from_ciphertext(cipher.clone())
-    /// assert_eq!(enc.to_inner(), cipher)
+    /// assert_eq!(enc.into_inner(), cipher)
     /// ```
-    pub fn to_inner(self) -> Vec<u8> {
+    pub fn into_inner(self) -> Vec<u8> {
         self.ciphertext
     }
 }
@@ -116,10 +116,7 @@ pub mod serde_base64 {
         serializer.serialize_str(&b64)
     }
 
-    pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Vec<u8>, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
+    pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Vec<u8>, D::Error> {
         struct Base64Visitor;
 
         impl<'de> serde::de::Visitor<'de> for Base64Visitor {
@@ -141,19 +138,21 @@ pub mod serde_base64 {
 // SAFETY: We assume in good faith that [`serde`] and [`serde_json`] don't unneccessairly clone secret
 pub mod serde_base64_secrecy {
     use base64ct::{Base64UrlUnpadded, Encoding};
-    use serde::{Deserializer, Serializer};
     use secrecy::{ExposeSecret, SecretBox};
+    use serde::{Deserializer, Serializer};
 
-    pub fn serialize<S: Serializer>(bytes: &SecretBox<Vec<u8>>, serializer: S) -> Result<S::Ok, S::Error> {
+    pub fn serialize<S: Serializer>(
+        bytes: &SecretBox<Vec<u8>>,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error> {
         // TODO: confirm whether there's padding or no
         let b64 = Base64UrlUnpadded::encode_string(bytes.expose_secret());
         serializer.serialize_str(&b64)
     }
 
-    pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<SecretBox<Vec<u8>>, D::Error>
-    where
-        D: Deserializer<'de>,
-    {
+    pub fn deserialize<'de, D: Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<SecretBox<Vec<u8>>, D::Error> {
         struct Base64Visitor;
 
         impl<'de> serde::de::Visitor<'de> for Base64Visitor {
@@ -169,7 +168,9 @@ pub mod serde_base64_secrecy {
                     // SAFETY: We know that base64url encoding is always bigger than data
                     // Thus, we are sure we won't reallocate after this
                     b.reserve_exact(v.len());
-                    ret = Base64UrlUnpadded::decode(v, b).map(|x| x.len()).map_err(|_| E::custom("failed to decode base64url bytes"));
+                    ret = Base64UrlUnpadded::decode(v, b)
+                        .map(|x| x.len())
+                        .map_err(|_| E::custom("failed to decode base64url bytes"));
                 });
                 ret.map(|_| secret)
             }

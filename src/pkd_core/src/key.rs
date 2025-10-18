@@ -1,5 +1,4 @@
 use base64ct::{Base64UrlUnpadded, Encoding as _};
-use serde;
 
 /// A public key
 #[non_exhaustive]
@@ -98,7 +97,7 @@ mod tests {
         0xcf, 0x41, 0xcc, 0x4d, 0xcc, 0xd1, 0xf1, 0x51, 0x85, 0xe3, 0x8b, 0x2f, 0xe3, 0xbf, 0x15,
         0x14, 0xb3,
     ]);
-    const KEY_ENCODED: &'static str = "ed25519:Tm2XBvb0mAb4ldVubCzvz0HMTczR8VGF44sv478VFLM";
+    const KEY_ENCODED: &str = "ed25519:Tm2XBvb0mAb4ldVubCzvz0HMTczR8VGF44sv478VFLM";
 
     #[test]
     fn encode() {
