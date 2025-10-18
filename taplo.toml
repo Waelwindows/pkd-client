@@ -1,9 +1,9 @@
+include = ["Cargo.toml", "src/**/Cargo.toml"]
+
 [formatting]
 reorder_keys = false
 
 [[rule]]
-include = ["**/Cargo.toml"]
-exclude = [".duvet/**/*.toml"]
 keys = ["dependencies"]
 
 [rule.formatting]

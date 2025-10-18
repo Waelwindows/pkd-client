@@ -1,8 +1,6 @@
 [workspace]
 resolver = "3"
-members = [
-    "src/pkd_core",
-]
+members = ["src/pkd_core"]
 
 # Needed to appease crane
 [workspace.package]

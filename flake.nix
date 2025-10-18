@@ -92,7 +92,7 @@
           my-workspace-toml-fmt = craneLib.taploFmt {
             src = pkgs.lib.sources.sourceFilesBySuffices src [ ".toml" ];
             # taplo arguments can be further customized below as needed
-            # taploExtraArgs = "--config ./taplo.toml";
+            taploExtraArgs = "--config ./taplo.toml";
           };
 
           # Audit dependencies
