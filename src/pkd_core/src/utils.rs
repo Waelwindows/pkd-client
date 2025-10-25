@@ -1,4 +1,6 @@
-use std::{ops::Deref, time::Duration};
+use std::{fmt::Display, ops::Deref, time::Duration};
+
+use base64ct::{Base64UrlUnpadded, Encoding};
 
 pub(crate) mod sealed {
     /// A marker trait to indicate downstream crates shouldn't implement traits.
@@ -121,6 +123,114 @@ impl<T> Timestamped<T> {
             time: Timestamp::epoch(),
             inner,
         }
+    }
+}
+
+pub trait PrefixedBase64Value {
+    type Value: AsRef<[u8]> + for<'a> TryFrom<&'a [u8]>;
+    const PREFIX: &'static str;
+    const LEN: usize;
+    const ENCODED_LEN: usize;
+}
+
+/// A [base64url](https://datatracker.ietf.org/doc/html/rfc4648#autoid-10) encoded binary value.
+#[derive(Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash, Copy, Clone)]
+pub struct PrefixedBase64<T: PrefixedBase64Value>(pub T::Value);
+
+impl<T: PrefixedBase64Value> PrefixedBase64<T> {
+    /// Create a new value of [`PrefixedBase64`]
+    /// # Example
+    /// ```
+    /// use pkd_core::key::ed25519::Ed25519Tag;
+    ///
+    /// let key: [u8; 32] = [
+    ///     0x4e, 0x6d, 0x97, 0x06, 0xf6, 0xf4, 0x98, 0x06, 0xf8, 0x95, 0xd5, 0x6e, 0x6c, 0x2c, 0xef,
+    ///     0xcf, 0x41, 0xcc, 0x4d, 0xcc, 0xd1, 0xf1, 0x51, 0x85, 0xe3, 0x8b, 0x2f, 0xe3, 0xbf, 0x15,
+    ///     0x14, 0xb3,
+    /// ];
+    /// let val = PrefixedBase64::<Ed25519Tag>::new(key); // key's type depends on Edd25519Tag
+    /// assert_eq!(val.to_string(), "ed25519:Tm2XBvb0mAb4ldVubCzvz0HMTczR8VGF44sv478VFLM")
+    /// ```
+    pub const fn new(val: T::Value) -> Self {
+        Self(val)
+    }
+}
+
+impl<T: PrefixedBase64Value> Display for PrefixedBase64<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_fmt(format_args!(
+            "{}:{}",
+            T::PREFIX,
+            Base64UrlUnpadded::encode_string(self.0.as_ref())
+        ))
+    }
+}
+
+impl<T: PrefixedBase64Value> From<PrefixedBase64<T>> for String {
+    fn from(val: PrefixedBase64<T>) -> Self {
+        val.to_string()
+    }
+}
+
+impl<T: PrefixedBase64Value> serde::Serialize for PrefixedBase64<T> {
+    //= https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#merkle-root-encoding
+    //# Each Merkle Root will be encoded as an unpadded base64url string, prefixed with a distinct prefix for the current protocol version followed by a colon (currently, pkd-mr-v1:).
+    fn serialize<S: serde::Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        serializer.serialize_str(&self.to_string())
+    }
+}
+
+impl<'de, T: PrefixedBase64Value> serde::Deserialize<'de> for PrefixedBase64<T> {
+    //= https://raw.githubusercontent.com/fedi-e2ee/public-key-directory-specification/refs/heads/main/Specification.md#merkle-root-encoding
+    //# Each Merkle Root will be encoded as an unpadded base64url string, prefixed with a distinct prefix for the current protocol version followed by a colon (currently, pkd-mr-v1:).
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct PrefixedVisitor<T>(std::marker::PhantomData<T>);
+
+        impl<'de, T: PrefixedBase64Value> serde::de::Visitor<'de> for PrefixedVisitor<T> {
+            type Value = PrefixedBase64<T>;
+
+            fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
+                formatter.write_str("a base64url encoded value")
+            }
+
+            fn visit_str<E>(self, v: &str) -> Result<Self::Value, E>
+            where
+                E: serde::de::Error,
+            {
+                let rest = v.strip_prefix(&format!("{}:", T::PREFIX)).ok_or_else(|| {
+                    E::custom(format!("expected value to start with '{}:'", T::PREFIX))
+                })?;
+                if rest.len() == T::ENCODED_LEN {
+                    // HACK: can't use const generic parameter to make array
+                    let mut key = vec![0; T::LEN];
+                    let wrote = Base64UrlUnpadded::decode(rest, &mut key)
+                        .map_err(|_| E::custom("failed to decode base64url"))?
+                        .len();
+                    if T::LEN == wrote {
+                        Ok(PrefixedBase64(T::Value::try_from(&key).map_err(|_| {
+                            E::custom("expected to instantiate value from bytes")
+                        })?))
+                    } else {
+                        Err(E::custom(format!(
+                            "invalid key length, expected {} found {}",
+                            T::LEN,
+                            wrote
+                        )))
+                    }
+                } else {
+                    Err(E::custom(format!(
+                        "invalid encoded length, expected {} found {}",
+                        T::ENCODED_LEN,
+                        rest.len()
+                    )))
+                }
+            }
+        }
+
+        deserializer.deserialize_str(PrefixedVisitor(std::marker::PhantomData))
     }
 }
 

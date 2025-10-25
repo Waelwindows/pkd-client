@@ -13,3 +13,4 @@ mod utils;
 
 pub use key::*;
 pub use merkle::*;
+pub use utils::PrefixedBase64;
